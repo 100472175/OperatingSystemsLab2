@@ -68,72 +68,121 @@ void getCompleteCommand(char*** argvv, int num_command) {
 
 
 /**
- * Main sheell  Loop  
+ * Main sheell  Loop
  */
-int main(int argc, char* argv[])
-{
-	/**** Do not delete this code.****/
-	int end = 0; 
-	int executed_cmd_lines = -1;
-	char *cmd_line = NULL;
-	char *cmd_lines[10];
+int main(int argc, char* argv[]) {
+    /**** Do not delete this code.****/
+    int end = 0;
+    int executed_cmd_lines = -1;
+    char *cmd_line = NULL;
+    char *cmd_lines[10];
 
-	if (!isatty(STDIN_FILENO)) {
-		cmd_line = (char*)malloc(100);
-		while (scanf(" %[^\n]", cmd_line) != EOF){
-			if(strlen(cmd_line) <= 0) return 0;
-			cmd_lines[end] = (char*)malloc(strlen(cmd_line)+1);
-			strcpy(cmd_lines[end], cmd_line);
-			end++;
-			fflush (stdin);
-			fflush(stdout);
-		}
-	}
+    if (!isatty(STDIN_FILENO)) {
+        cmd_line = (char *) malloc(100);
+        while (scanf(" %[^\n]", cmd_line) != EOF) {
+            if (strlen(cmd_line) <= 0) return 0;
+            cmd_lines[end] = (char *) malloc(strlen(cmd_line) + 1);
+            strcpy(cmd_lines[end], cmd_line);
+            end++;
+            fflush(stdin);
+            fflush(stdout);
+        }
+    }
 
-	pthread_create(&timer_thread,NULL,timer_run, NULL);
+    pthread_create(&timer_thread, NULL, timer_run, NULL);
 
-	/*********************************/
+    /*********************************/
 
-	char ***argvv = NULL;
-	int num_commands;
-
-
-	while (1) 
-	{
-		int status = 0;
-		int command_counter = 0;
-		int in_background = 0;
-		signal(SIGINT, siginthandler);
-
-		// Prompt 
-		write(STDERR_FILENO, "MSH>>", strlen("MSH>>"));
-
-		// Get command
-		//********** DO NOT MODIFY THIS PART. IT DISTINGUISH BETWEEN NORMAL/CORRECTION MODE***************
-		executed_cmd_lines++;
-		if( end != 0 && executed_cmd_lines < end) {
-			command_counter = read_command_correction(&argvv, filev, &in_background, cmd_lines[executed_cmd_lines]);
-		}
-		else if( end != 0 && executed_cmd_lines == end) {
-			return 0;
-		}
-		else {
-			command_counter = read_command(&argvv, filev, &in_background); //NORMAL MODE
-		}
-		//************************************************************************************************
+    char ***argvv = NULL;
+    int num_commands;
 
 
-		/************************ STUDENTS CODE ********************************/
-		if (command_counter > 0) {
-			if (command_counter > MAX_COMMANDS){
-				printf("Error: Maximum number of commands is %d \n", MAX_COMMANDS);
-			}
-			else {
-				// Print command
-				print_command(argvv, filev, in_background);
-			}
-		}
-	}
-	
-	return 0;
+    while (1) {
+        int status = 0;
+        int command_counter = 0;
+        int in_background = 0;
+        signal(SIGINT, siginthandler);
+
+        // Prompt
+        write(STDERR_FILENO, "MSH>>", strlen("MSH>>"));
+
+        // Get command
+        //********** DO NOT MODIFY THIS PART. IT DISTINGUISH BETWEEN NORMAL/CORRECTION MODE***************
+        executed_cmd_lines++;
+        if (end != 0 && executed_cmd_lines < end) {
+            command_counter = read_command_correction(&argvv, filev, &in_background, cmd_lines[executed_cmd_lines]);
+        } else if (end != 0 && executed_cmd_lines == end) {
+            return 0;
+        } else {
+            command_counter = read_command(&argvv, filev, &in_background); //NORMAL MODE
+        }
+        //************************************************************************************************
+
+
+        /************************ STUDENTS CODE ********************************/
+        if (command_counter > 0) {
+            if (command_counter > MAX_COMMANDS) {
+                printf("Error: Maximum number of commands is %d \n", MAX_COMMANDS);
+            } else {
+                int num_pipes = command_counter - 1;
+                int pipe_fds[num_pipes][2];
+
+                // Create pipes
+                for (int i = 0; i < num_pipes; i++) {
+                    if (pipe(pipe_fds[i]) < 0) {
+                        perror("pipe");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+
+                // Execute commands
+                for (int i = 0; i < command_counter; i++) {
+                    pid_t pid = fork();
+
+                    if (pid < 0) {
+                        perror("fork");
+                        exit(EXIT_FAILURE);
+                    } else if (pid == 0) {
+                        // Child process
+
+                        // Set up pipes
+                        if (i < num_pipes) {
+                            if (dup2(pipe_fds[i][1], STDOUT_FILENO) < 0) {
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                            close(pipe_fds[i][0]);
+                        }
+                        if (i > 0) {
+                            if (dup2(pipe_fds[i - 1][0], STDIN_FILENO) < 0) {
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                            close(pipe_fds[i - 1][1]);
+                        }
+
+                        // Execute command
+                        if (execvp(argvv[i][0], argvv[i]) < 0) {
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+                }
+
+                // Close pipes
+                for (int i = 0; i < num_pipes; i++) {
+                    close(pipe_fds[i][0]);
+                    close(pipe_fds[i][1]);
+                }
+
+                // Wait for all children to finish
+                for (int i = 0; i < command_counter; i++) {
+                    int status;
+                    wait(&status);
+                }
+            }
+        }
+    }
+    return 0;
 }
+
