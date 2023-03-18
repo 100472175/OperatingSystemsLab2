@@ -98,8 +98,7 @@ int main(int argc, char* argv[])
 	int num_commands;
 
 
-	while (1) 
-	{
+	while (1){
 		int status = 0;
 		int command_counter = 0;
 		int in_background = 0;
