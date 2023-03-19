@@ -126,40 +126,47 @@ int main(int argc, char* argv[]) {
             if (command_counter > MAX_COMMANDS) {
                 printf("Too many commands. Maximum allowed: %d\n", MAX_COMMANDS);
             } else {
-                getCompleteCommand(argvv, 0);
-                if (strcmp(argv_execvp[0], "exit") == 0) {
+                //getCompleteCommand(argvv, 0);
+                if (strcmp(argvv[0][0], "exit") == 0) {
+                    printf("exiting...\n");
                     exit(0);
-                } else if (strcmp(argv_execvp[0], "mytime") == 0){
+                } else if (strcmp(argvv[0][0], "mytime") == 0) {
+                    printf("mytiming...\n");
                     printf("mytime: %lu\n", mytime);
-                } else if (strcmp(argv_execvp[0], "cd") == 0) {
+                } else if (strcmp(argvv[0][0], "cd") == 0) {
+                    printf("changing directory...\n");
                     if (argvv[0][1] == NULL) {
                         chdir(getenv("HOME"));
                     } else {
                         chdir(argvv[0][1]);
                     }
-                } else if (strcmp(argvv[0][0], "mycalc") == 0){
+                } else if (strcmp(argvv[0][0], "mycalc") == 0) {
                     //TODOD
-                }
+                    printf("calculating\n");
+                    // Parsing the input:
 
-                // Execute commands in a loop
-                //
-                // 1. Create a child process
-                // 2. Child process: execute the command
-                // 3. Parent process: wait for the child to finish
-                // 4. If in_background is 0, parent waits. Otherwise, parent continues
-                // 5. Shell shows a new prompt
-                // 6. Shell loops back to step 1
+                } else {
 
-                // 1. Create a child process:
-                pid_t pid = fork();
+                    // Execute commands in a loop
+                    //
+                    // 1. Create a child process
+                    // 2. Child process: execute the command
+                    // 3. Parent process: wait for the child to finish
+                    // 4. If in_background is 0, parent waits. Otherwise, parent continues
+                    // 5. Shell shows a new prompt
+                    // 6. Shell loops back to step 1
 
-                // 2. Child process: execute the command:
-                if (pid == 0) {
-                    execvp(argvv[0][0], argvv[0]);
-                } else if (pid > 0){
-                    // 3. Parent process: wait for the child to finish:
-                    if (in_background == 0)
-                        waitpid(pid, &status, 0);
+                    // 1. Create a child process:
+                    pid_t pid = fork();
+
+                    // 2. Child process: execute the command:
+                    if (pid == 0) {
+                        execvp(argvv[0][0], argvv[0]);
+                    } else if (pid > 0) {
+                        // 3. Parent process: wait for the child to finish:
+                        if (in_background == 0)
+                            waitpid(pid, &status, 0);
+                    }
                 }
             }
         }
