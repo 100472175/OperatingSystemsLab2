@@ -141,28 +141,53 @@ int main(int argc, char* argv[]) {
                     } else {
                         chdir(argvv[0][1]);
                     }
+
+                // mycalc
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
-                    //TODOD
-                    printf("calculating\n");
-
-
-                    // Parsing the input: - DONE -
-                    // 1. Get the first number
-                    // 2. Get the second number
-                    // 3. Get the operator
-                    // 4. Get the result
-                    // 4a. If the operator is sum, store it in Acc
-                    // 5. Print the result
-
+                    if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) || (argvv[0][4] != NULL)) {
+                        printf("[ERROR] The structure of the \033[1mcommand\033[0m is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                    } else {
+                        //printf("%s yes", argvv[0][0]);
+                        //printf("%s no", argvv[0][1]);
+                        //printf("calculating\n");
+                        //print_command(argvv, filev, in_background);
+                        // 1. Get the first number
+                        int first_number = atoi(argvv[0][1]);
+                        // 2. Get the second number
+                        int second_number = atoi(argvv[0][3]);
+                        //printf("result: %i", first_number+second_number);
+                        // 3. Get the operator + result
+                        char operator_str[3];
+                        strcpy(operator_str, argvv[0][2]);
+                        if (strcmp(operator_str, "add") == 0) {
+                            int result = first_number + second_number;
+                            Acc += result;
+                            printf("[OK] %i + %i = %i; Acc %i\n", first_number, second_number, result, Acc);
+                        } else if (strcmp(operator_str, "mul") == 0) {
+                            int result = first_number * second_number;
+                            printf("[OK] %i * %i = %i\n", first_number, second_number, result);
+                        } else if (strcmp(operator_str, "div") == 0) {
+                            int result = first_number / second_number;
+                            printf("[OK] %i / %i = %i; Reminder %d\n", first_number, second_number, result,
+                                   first_number % second_number);
+                        } else {
+                            printf("[ERROR] The structure of the \033[1mcommand\033[0m is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                        }
+                    }
+                /*
+                    //printf("%s yes", argvv[0][0]);
+                    //printf("%s no", argvv[0][1]);
+                    //printf("calculating\n");
+                    //print_command(argvv, filev, in_background);
                     // 1. Get the first number
                     int first_number = atoi(argvv[0][1]);
                     // 2. Get the second number
                     int second_number = atoi(argvv[0][3]);
-
+                    //printf("result: %i", first_number+second_number);
                     // 3. Get the operator + result
                     char operator_str[3];
                     strcpy(operator_str, argvv[0][2]);
-                    if (operator_str == "add") {
+                    if (strcmp(operator_str, "add") == 0) {
                         // 4a. If the operator is sum, store it in Acc
                         int result = first_number + second_number;
                         Acc += result;
@@ -178,7 +203,7 @@ int main(int argc, char* argv[]) {
 
                         printf("Invalid operator");
                     }
-                    // 5. Print the result
+                */
 
 
 
