@@ -26,6 +26,7 @@ char filev[3][64];
 
 //to store the execvp second parameter
 char *argv_execvp[8];
+int Acc = 0;
 
 
 void siginthandler(int param)
@@ -143,7 +144,48 @@ int main(int argc, char* argv[]) {
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
                     //TODOD
                     printf("calculating\n");
-                    // Parsing the input:
+
+
+                    // Parsing the input: - DONE -
+                    // 1. Get the first number
+                    // 2. Get the second number
+                    // 3. Get the operator
+                    // 4. Get the result
+                    // 4a. If the operator is sum, store it in Acc
+                    // 5. Print the result
+
+                    // 1. Get the first number
+                    int first_number = atoi(argvv[0][1]);
+                    // 2. Get the second number
+                    int second_number = atoi(argvv[0][3]);
+
+                    // 3. Get the operator + result
+                    char operator_str[3];
+                    strcpy(operator_str, argvv[0][2]);
+                    if (operator_str == "add") {
+                        // 4a. If the operator is sum, store it in Acc
+                        int result = first_number + second_number;
+                        Acc += result;
+                        printf("[OK] %i + %i = %i; Acc %i", first_number, second_number, result, Acc);
+                    } else if (operator_str == "mul") {
+                        int result = first_number * second_number;
+                        printf("[OK] %i * %i = %i", first_number, second_number, result);
+                    } else if (operator_str == "div") {
+                        int result = first_number / second_number;
+                        float reminder = first_number % second_number;
+                        printf("[OK] %i / %i = %i, Reminder %f", first_number, second_number, result, reminder);
+
+
+                        printf("Invalid operator");
+                    }
+                    // 5. Print the result
+
+
+
+
+
+
+
 
                 } else {
 
