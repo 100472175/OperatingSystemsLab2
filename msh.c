@@ -120,69 +120,12 @@ int main(int argc, char* argv[]) {
 
 
         /************************ STUDENTS CODE ********************************/
-        if (command_counter > 0) {
-            if (command_counter > MAX_COMMANDS) {
-                printf("Error: Maximum number of commands is %d \n", MAX_COMMANDS);
-            } else {
-                int num_pipes = command_counter - 1;
-                int pipe_fds[num_pipes][2];
 
-                // Create pipes
-                for (int i = 0; i < num_pipes; i++) {
-                    if (pipe(pipe_fds[i]) < 0) {
-                        perror("pipe");
-                        exit(EXIT_FAILURE);
-                    }
-                }
+        // Following the recommendations of the PDF
 
-                // Execute commands
-                for (int i = 0; i < command_counter; i++) {
-                    pid_t pid = fork();
 
-                    if (pid < 0) {
-                        perror("fork");
-                        exit(EXIT_FAILURE);
-                    } else if (pid == 0) {
-                        // Child process
 
-                        // Set up pipes
-                        if (i < num_pipes) {
-                            if (dup2(pipe_fds[i][1], STDOUT_FILENO) < 0) {
-                                perror("dup2");
-                                exit(EXIT_FAILURE);
-                            }
-                            close(pipe_fds[i][0]);
-                        }
-                        if (i > 0) {
-                            if (dup2(pipe_fds[i - 1][0], STDIN_FILENO) < 0) {
-                                perror("dup2");
-                                exit(EXIT_FAILURE);
-                            }
-                            close(pipe_fds[i - 1][1]);
-                        }
 
-                        // Execute command
-                        if (execvp(argvv[i][0], argvv[i]) < 0) {
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
-                    }
-                }
 
-                // Close pipes
-                for (int i = 0; i < num_pipes; i++) {
-                    close(pipe_fds[i][0]);
-                    close(pipe_fds[i][1]);
-                }
 
-                // Wait for all children to finish
-                for (int i = 0; i < command_counter; i++) {
-                    int status;
-                    wait(&status);
-                }
-            }
-        }
-    }
-    return 0;
-}
 
