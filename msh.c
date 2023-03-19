@@ -132,10 +132,28 @@ int main(int argc, char* argv[]) {
                     printf("exiting...\n");
                     exit(0);
                 } else if (strcmp(argvv[0][0], "mytime") == 0) {
-                    printf("mytiming...\n");
-                    printf("mytime: %lu\n", mytime);
+                    //printf("mytiming...\n");
+                    /*
+                    float reduced_time = mytime / 1000; // Seconds
+                    reduced_time = reduced_time / 60; // Minutes
+                    //reduced_time = reduced_time / 60; // Hours
+                    int hours, minutes, seconds = 0;
+                    hours = reduced_time / 3600;
+                    reduced_time = reduced_time - (hours * 3600);
+                    minutes = reduced_time / 60;
+                    reduced_time = reduced_time - (minutes * 60);
+                    seconds = reduced_time;
+                    printf("mytime: %i:%i:%i\n", hours, minutes, seconds);
+                     */
+                    // Expressing the time from miliseconds to format HH:MM:SS
+                    int hours = mytime / 3600000;
+                    int minutes = (mytime % 3600000) / 60000;
+                    int seconds = ((mytime % 3600000) % 60000) / 1000;
+                    printf("mytime: %02d:%02d:%02d\n", hours, minutes, seconds);
+
+                    //printf("mytime: %lu\n", mytime);
                 } else if (strcmp(argvv[0][0], "cd") == 0) {
-                    printf("changing directory...\n");
+                    //printf("changing directory...\n");
                     if (argvv[0][1] == NULL) {
                         chdir(getenv("HOME"));
                     } else {
@@ -144,19 +162,16 @@ int main(int argc, char* argv[]) {
 
                 // mycalc
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
-                    if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) || (argvv[0][4] != NULL)) {
+                    if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
+                        (argvv[0][4] != NULL)) {
                         printf("[ERROR] The structure of the \033[1mcommand\033[0m is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                     } else {
-                        //printf("%s yes", argvv[0][0]);
-                        //printf("%s no", argvv[0][1]);
-                        //printf("calculating\n");
-                        //print_command(argvv, filev, in_background);
                         // 1. Get the first number
                         int first_number = atoi(argvv[0][1]);
                         // 2. Get the second number
                         int second_number = atoi(argvv[0][3]);
                         //printf("result: %i", first_number+second_number);
-                        // 3. Get the operator + result
+                        // 3. Get the operator + result + print
                         char operator_str[3];
                         strcpy(operator_str, argvv[0][2]);
                         if (strcmp(operator_str, "add") == 0) {
@@ -174,44 +189,6 @@ int main(int argc, char* argv[]) {
                             printf("[ERROR] The structure of the \033[1mcommand\033[0m is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
                     }
-                /*
-                    //printf("%s yes", argvv[0][0]);
-                    //printf("%s no", argvv[0][1]);
-                    //printf("calculating\n");
-                    //print_command(argvv, filev, in_background);
-                    // 1. Get the first number
-                    int first_number = atoi(argvv[0][1]);
-                    // 2. Get the second number
-                    int second_number = atoi(argvv[0][3]);
-                    //printf("result: %i", first_number+second_number);
-                    // 3. Get the operator + result
-                    char operator_str[3];
-                    strcpy(operator_str, argvv[0][2]);
-                    if (strcmp(operator_str, "add") == 0) {
-                        // 4a. If the operator is sum, store it in Acc
-                        int result = first_number + second_number;
-                        Acc += result;
-                        printf("[OK] %i + %i = %i; Acc %i", first_number, second_number, result, Acc);
-                    } else if (operator_str == "mul") {
-                        int result = first_number * second_number;
-                        printf("[OK] %i * %i = %i", first_number, second_number, result);
-                    } else if (operator_str == "div") {
-                        int result = first_number / second_number;
-                        float reminder = first_number % second_number;
-                        printf("[OK] %i / %i = %i, Reminder %f", first_number, second_number, result, reminder);
-
-
-                        printf("Invalid operator");
-                    }
-                */
-
-
-
-
-
-
-
-
                 } else {
 
                     // Execute commands in a loop
