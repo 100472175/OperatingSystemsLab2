@@ -193,160 +193,111 @@ int main(int argc, char* argv[]) {
                         }
                     }
                 } else {
-                    if (command_counter == 1) {
-                        //printf("num_commands: %d", command_counter);
-                        // Calls to function for each command
-                        // Only 1 command works here, no pipes
-                        pid_t pid = fork();
 
-                        // 2. Child process: execute the command:
-                        if (pid == 0) {
-                            getCompleteCommand(argvv, 0);
-                            execvp(argv_execvp[0], argv_execvp);
+                    // Calls to function for each command
+                    // Only 1 command works here, no pipes
+                    pid_t pid = fork();
 
-                        } else if (pid > 0) {
-                            // 3. Parent process: wait for the child to finish:
-                            if (in_background == 0)
-                                waitpid(pid, &status, 0);
-                        }
+                    // 2. Child process: execute the command:
+                    if (pid == 0) {
+                        //char *argv[] = {"nohub sleep", "3", "&", NULL};
+                        //execvp(argv[0], argv);
+                        execvp(argvv[0][0], argvv[0]);
+
+                    } else if (pid > 0) {
+                        // 3. Parent process: wait for the child to finish:
+                        if (in_background == 0)
+                            waitpid(pid, &status, 0);
                     }
-                    else if (command_counter == 2) {
-                        /*
-                        // 3 Commands
-                        int pipefd[3][2]; // Pipes
-                        for (int i = 0; i < num_commands-1; i++) {
-                            if (pipe(pipefd[i]) == -1) {
-                                printf("Pipe failed in line %d in iteration %d\n", __LINE__, i);
-                                perror("pipe");
-                                exit(EXIT_FAILURE);
-                            }
-                        }
 
-                        pid_t pid1 = fork();
-                        if (pid1 == -1){
-                            perror("fork1");
-                            exit(EXIT_FAILURE);
-                        } else if (pid1 == 0){
-                            close(pipefd[0][0]); // Close unused read end of first pipe ----------------------------------
-                            dup2(pipefd[0][1], STDOUT_FILENO); // redirect standard output to write end of first pipe
-                            close(pipefd[1][0]); // close unused ends of second and third pipes
-                            close(pipefd[1][1]);
-                            close(pipefd[2][0]);
-                            close(pipefd[2][1]);
-                            getCompleteCommand(argvv, 0);
-                            execvp(argv_execvp[0], argv_execvp);
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
-
-                        pid_t pid2 = fork();
-                        if (pid2 == -1){
-                            perror("fork2");
-                            exit(EXIT_FAILURE);
-                        } else if (pid2 == 0){
-                            close(pipefd[0][1]);
-                            dup2(pipefd[0][0], STDIN_FILENO);
-                            close(pipefd[1][0]);
-                            dup2(pipefd[1][1], STDOUT_FILENO);
-                            close(pipefd[2][0]);
-                            close(pipefd[2][1]);
-                            getCompleteCommand(argvv, 1);
-                            execvp(argv_execvp[0], argv_execvp);
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
-
-                        pid_t pid3 = fork();
-                        if (pid3 == -1){
-                            perror("fork3");
-                            exit(EXIT_FAILURE);
-                        } else if (pid3 == 0){
-                            close(pipefd[0][0]);
-                            close(pipefd[0][1]);
-                            close(pipefd[1][1]);
-                            dup2(pipefd[1][0], STDIN_FILENO);
-                            close(pipefd[2][0]);
-                            dup2(pipefd[2][1], STDOUT_FILENO);
-                            getCompleteCommand(argvv, 2);
-                            execvp(argv_execvp[0], argv_execvp);
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
-
-                        close(pipefd[0][0]);
-                        close(pipefd[0][1]);
-                        close(pipefd[1][0]);
-                        close(pipefd[1][1]);
-                        close(pipefd[2][1]);
-
-
-
-                        // Read from pipe and print to stdout, unless redirect exists
-                        char buf[1024];
-                        int n;
-                        while ((n = read((long int)pipefd[2], buf, sizeof(buf))) > 0) {
-                            write(STDOUT_FILENO, buf, n); // Write to standard output
-                        }
-                            close(pipefd[2][0]);
-
-
-                        wait(NULL); // Wait for all children to finish
-                        return 0;
-
-                        */
-                        /*
-                        // Wait for all children to finish
-                        if (in_background == 1) {
-                            waitpid(pid1, &status, 0);
-                            waitpid(pid2, &status, 0);
-                            waitpid(pid3, &status, 0);
-                        }
-                        */
-
-                        int fd[2];
-                        if (pipe(fd) == -1) {
+                    /*
+                    // 3 Commands
+                    int pipefd[3][2]; // Pipes
+                    for (int i = 0; i < num_commands-1; i++) {
+                        if (pipe(pipefd[i]) == -1) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
-                        pid_t pid_ls = fork();
-                        if (pid_ls == -1) {
-                            perror("fork");
-                            exit(EXIT_FAILURE);
-                        } else if (pid_ls == 0) {
-                            close(fd[0]);
-                            close(STDOUT_FILENO); // close(1);
-                            dup(fd[1]);
-                            close(fd[1]);
-                            getCompleteCommand(argvv, 0);
-                            execvp(argv_execvp[0], argv_execvp);
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
+                    }
 
-                        pid_t pid_wc = fork();
-                        if (pid_wc == -1) {
-                            perror("fork");
-                            exit(EXIT_FAILURE);
-                        } else if (pid_wc == 0) {
-                            close(fd[1]);
-                            close(STDIN_FILENO); // close(0);
+                    pid_t pid1 = fork();
+                    if (pid1 == -1){
+                        perror("fork1");
+                        exit(EXIT_FAILURE);
+                    } else if (pid1 == 0){
+                        close(pipefd[0][0]); // Close unused read end of first pipe ----------------------------------
+                        dup2(pipefd[0][1], STDOUT_FILENO); // redirect standard output to write end of first pipe
+                        close(pipefd[1][0]); // close unused ends of second and third pipes
+                        close(pipefd[1][1]);
+                        close(pipefd[2][0]);
+                        close(pipefd[2][1]);
+                        getCompleteCommand(argvv, 0);
+                        execvp(argv_execvp[0], argv_execvp);
+                        perror("execvp");
+                        exit(EXIT_FAILURE);
+                    }
 
-                            dup(fd[0]);
-                            close(fd[0]);
-                            getCompleteCommand(argvv, 1);
-                            execvp(argv_execvp[0], argv_execvp);
-                            perror("execvp");
-                            exit(EXIT_FAILURE);
-                        }
-                        close(fd[0]);
-                        close(fd[1]);
-                        if (in_background == 0) {
-                            waitpid(pid_ls, &status, 0);
-                            waitpid(pid_wc, &status, 0);
-                        }
-                    } else if (command_counter == 3) {
-                        printf("NOUP, 3 commands not supported yet\n");
-                }
+                    pid_t pid2 = fork();
+                    if (pid2 == -1){
+                        perror("fork2");
+                        exit(EXIT_FAILURE);
+                    } else if (pid2 == 0){
+                        close(pipefd[0][1]);
+                        dup2(pipefd[0][0], STDIN_FILENO);
+                        close(pipefd[1][0]);
+                        dup2(pipefd[1][1], STDOUT_FILENO);
+                        close(pipefd[2][0]);
+                        close(pipefd[2][1]);
+                        getCompleteCommand(argvv, 1);
+                        execvp(argv_execvp[0], argv_execvp);
+                        perror("execvp");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    pid_t pid3 = fork();
+                    if (pid3 == -1){
+                        perror("fork3");
+                        exit(EXIT_FAILURE);
+                    } else if (pid3 == 0){
+                        close(pipefd[0][0]);
+                        close(pipefd[0][1]);
+                        close(pipefd[1][1]);
+                        dup2(pipefd[1][0], STDIN_FILENO);
+                        close(pipefd[2][0]);
+                        dup2(pipefd[2][1], STDOUT_FILENO);
+                        getCompleteCommand(argvv, 2);
+                        execvp(argv_execvp[0], argv_execvp);
+                        perror("execvp");
+                        exit(EXIT_FAILURE);
+                    }
+
+                    close(pipefd[0][0]);
+                    close(pipefd[0][1]);
+                    close(pipefd[1][0]);
+                    close(pipefd[1][1]);
+                    close(pipefd[2][1]);
+
+
+
+                    // Read from pipe and print to stdout, unless redirect exists
+                    char buf[1024];
+                    int n;
+                    while ((n = read((long int)pipefd[2], buf, sizeof(buf))) > 0) {
+                        write(STDOUT_FILENO, buf, n); // Write to standard output
+                    }
+                        close(pipefd[2][0]);
+
+                    wait(NULL); // Wait for all children to finish
+                    return 0;
+                     */
+                    /*
+                    // Wait for all children to finish
+                    if (in_background == 1) {
+                        waitpid(pid1, &status, 0);
+                        waitpid(pid2, &status, 0);
+                        waitpid(pid3, &status, 0);
+                    */
+
                 }
             }
         }
