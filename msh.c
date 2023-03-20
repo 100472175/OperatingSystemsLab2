@@ -180,11 +180,13 @@ int main(int argc, char* argv[]) {
 
                 } else {
                     if (command_counter == 1) {
-                        print_command(argvv,filev,command_counter);
+                        print_command(argvv,filev,in_background);
                         //printf("num_commands: %d", command_counter);
                         // Calls to function for each command
                         // Only 1 command works here, no pipes
                         pid_t pid = fork();
+
+                        /*
                         if (filev[1] != NULL) {
                             int fd = open(filev[1], O_WRONLY | O_CREAT |O_TRUNC, 0644);
                             if (fd == -1) {
@@ -198,6 +200,7 @@ int main(int argc, char* argv[]) {
                             }
                             close(fd);
                         }
+                        */
                         // 2. Child process: execute the command:
                         if (pid == 0) {
                             getCompleteCommand(argvv, 0);
