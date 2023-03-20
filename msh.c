@@ -135,35 +135,13 @@ int main(int argc, char* argv[]) {
                     }
                     //exit(0);
                 } else if (strcmp(argvv[0][0], "mytime") == 0) {
-                    //printf("mytiming...\n");
-                    /*
-                    float reduced_time = mytime / 1000; // Seconds
-                    reduced_time = reduced_time / 60; // Minutes
-                    //reduced_time = reduced_time / 60; // Hours
-                    int hours, minutes, seconds = 0;
-                    hours = reduced_time / 3600;
-                    reduced_time = reduced_time - (hours * 3600);
-                    minutes = reduced_time / 60;
-                    reduced_time = reduced_time - (minutes * 60);
-                    seconds = reduced_time;
-                    printf("mytime: %i:%i:%i\n", hours, minutes, seconds);
-                     */
                     // Expressing the time from miliseconds to format HH:MM:SS
                     int hours = mytime / 3600000;
                     int minutes = (mytime % 3600000) / 60000;
                     int seconds = ((mytime % 3600000) % 60000) / 1000;
                     printf("mytime: %02d:%02d:%02d\n", hours, minutes, seconds);
-
                     //printf("mytime: %lu\n", mytime);
-                } else if (strcmp(argvv[0][0], "cd") == 0) {
-                    //printf("changing directory...\n");
-                    if (argvv[0][1] == NULL) {
-                        chdir(getenv("HOME"));
-                    } else {
-                        chdir(argvv[0][1]);
-                    }
 
-                // mycalc
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
                     if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
                         (argvv[0][4] != NULL)) {
@@ -192,13 +170,34 @@ int main(int argc, char* argv[]) {
                             printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
                     }
+                } else if (strcmp(argvv[0][0], "cd") == 0) {
+                    //printf("changing directory...\n");
+                    if (argvv[0][1] == NULL) {
+                        chdir(getenv("HOME"));
+                    } else {
+                        chdir(argvv[0][1]);
+                    }
+
                 } else {
                     if (command_counter == 1) {
+                        print_command(argvv,filev,command_counter);
                         //printf("num_commands: %d", command_counter);
                         // Calls to function for each command
                         // Only 1 command works here, no pipes
                         pid_t pid = fork();
-
+                        if (filev[1] != NULL) {
+                            int fd = open(filev[1], O_WRONLY | O_CREAT |O_TRUNC, 0644);
+                            if (fd == -1) {
+                                perror("open");
+                                exit(1);
+                            }
+                            close(STDOUT_FILENO); // close(1);
+                            if (dup(fd) == -1) {
+                                perror("dup");
+                                exit(1);
+                            }
+                            close(fd);
+                        }
                         // 2. Child process: execute the command:
                         if (pid == 0) {
                             getCompleteCommand(argvv, 0);
@@ -346,7 +345,37 @@ int main(int argc, char* argv[]) {
                         }
                     } else if (command_counter == 3) {
                         printf("NOUP, 3 commands not supported yet\n");
-                }
+
+                        return 0;
+                        // Lets try to do it for n commands
+                        // First, we will create the pipes
+                        int pipefd[command_counter-1][2]; // Pipes, as we need one pipe every 2 commands
+                        for (int i = 0; i < command_counter-1; i++) {
+                            if (pipe(pipefd[i]) == -1) {
+                                //printf("Pipe failed in line %d in iteration %d\n", __LINE__, i);
+                                perror("pipe");
+                                exit(EXIT_FAILURE);
+                            }
+                        }
+                        if (filev[0] != NULL){
+
+                        }
+
+                        // Create the children
+                        pid_t pid[command_counter];
+
+                        for (int i = 0; i < command_counter; i++){
+                            if (pid[i] = fork() == -1){
+                                perror("fork");
+                                exit(EXIT_FAILURE);
+                            } else if (pid[i] == 0) { // Child
+                                if (i == 0){
+                                    //if
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
         }
