@@ -179,12 +179,14 @@ int main(int argc, char* argv[]) {
                     }
 
                 } else {
+                    // To do the redirections
+
+
                     if (command_counter == 1) {
-                        print_command(argvv, filev, in_background);
+                        // ------------------ 1 command -----------------------------------------------------------
+                        //print_command(argvv, filev, in_background);
                         //printf("num_commands: %d", command_counter);
-                        // Calls to function for each command
                         // Only 1 command works here, no pipes
-                        pid_t pid = fork();
 
                         /*
                         if (filev[1] != NULL) {
@@ -201,7 +203,9 @@ int main(int argc, char* argv[]) {
                             close(fd);
                         }
                         */
+
                         // 2. Child process: execute the command:
+                        pid_t pid = fork();
                         if (pid == 0) {
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
@@ -213,6 +217,7 @@ int main(int argc, char* argv[]) {
                         }
                     }
                     if (command_counter == 2) {
+                        // ------------------ 2 commands -----------------------------------------------------------
                         int fd[2];
                         if (pipe(fd) == -1) {
                             perror("pipe");
@@ -258,7 +263,9 @@ int main(int argc, char* argv[]) {
                             waitpid(pid_wc, &status, 0);
                         }
                     } else if (command_counter == 3) {
-                        printf("NOUP, 3 commands not supported yet\n");
+                        // ------------------ 3 commands -----------------------------------------------------------
+                        //printf("NOUP, 3 commands not supported yet\n");
+                        /*
                         //print_command(argvv,filev,in_background);
                         //return 0;
                         // Lets try to do it for n commands
@@ -331,6 +338,97 @@ int main(int argc, char* argv[]) {
                                     perror("execvp");
                                     exit(EXIT_FAILURE);
                                 }
+                            }
+                        }
+                    }
+                    */
+
+                        int p1[2], p2[2];
+                        if ((pipe(p1) == -1) || (pipe(p2) == -1)) {
+                            perror("pipe");
+                            exit(EXIT_FAILURE);
+                        }
+
+                        pid_t pid_ls = fork();
+                        if (pid_ls == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_ls == 0) {
+                            // Redirection
+                            close(STDOUT_FILENO);
+                            dup(p1[1]);
+
+                            // Specter Closer
+                            close(p1[1]);
+                            close(p1[0]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+
+                        } else {
+                            close(p1[1]);
+                        }
+
+                        pid_t pid_grep = fork();
+                        if (pid_grep == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_grep == 0) {
+                            // Redirect input
+                            close(STDIN_FILENO); // close(0);
+                            dup(p1[0]);
+
+                            // Close
+                            close(p1[0]);
+                            close(p1[1]);
+
+                            // Redirect output
+                            close(STDOUT_FILENO);
+                            dup(p2[1]);
+
+                            // Close
+                            close(p1[0]); // Input
+                            close(p2[1]);
+                            close(p2[0]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 1);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        } else {
+                            close(p1[0]);
+                            close(p2[1]);
+                        }
+
+                        pid_t pid_wc = fork();
+                        if (pid_wc == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_wc == 0) {
+                            // Redirect input
+                            close(STDIN_FILENO);
+                            dup(p2[0]);
+
+                            // Close
+                            close(p2[0]);
+                            //close(p2[1]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 2);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        } else {
+                            close(p2[0]);
+
+                            if (!in_background) {
+                                waitpid(pid_ls, &status, 0);
+                                waitpid(pid_grep, &status, 0);
+                                waitpid(pid_wc, &status, 0);
                             }
                         }
                     }
