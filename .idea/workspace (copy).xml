@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7d2ef59b-10d9-49c1-a20a-e19db1c661a3" name="Changes" comment="Added error_4commands_3greps.txt" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2NEAfbGWc8wYUTYqJW23ko5rxKn" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "last_opened_file_path": "/home/eduardo/CLionProjects/OperatingSystemsLab2",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "PLAIN_TEXT"
+    ]
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/tests" />
+    </key>
+  </component>
+  <component name="RunManager" selected="C/C++ File.msh.c">
+    <configuration name="alfonso.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" temporary="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OperatingSystemsLab2" TARGET_NAME="alfonso.c" CONFIG_NAME="alfonso.c">
+      <option name="sourceFile" value="tests/alfonso.c" />
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="msh.c" type="CppFileRunConfiguration" factoryName="CppFileRunConfiguration" nameIsGenerated="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="OperatingSystemsLab2" TARGET_NAME="msh.c" CONFIG_NAME="msh.c">
+      <option name="compilerOptions" value="-Wno-implicit-function-declaration -lparser -lpthread -lEAM" />
+      <option name="sourceFile" value="$PROJECT_DIR$/msh.c" />
+      <envs>
+        <env name="LD_LIBRARY_PATH" value="$PROJECT_DIR$" />
+      </envs>
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.runfile.CppFileBuildBeforeRunTaskProvider$BasicBuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="msh" type="MAKEFILE_TARGET_RUN_CONFIGURATION" factoryName="Makefile" temporary="true">
+      <makefile filename="$PROJECT_DIR$/Makefile" target="msh" workingDirectory="" arguments="">
+        <envs />
+      </makefile>
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="C/C++ File.msh.c" />
+      <item itemvalue="C/C++ File.alfonso.c" />
+      <item itemvalue="Makefile Target.msh" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="C/C++ File.alfonso.c" />
+        <item itemvalue="Makefile Target.msh" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7d2ef59b-10d9-49c1-a20a-e19db1c661a3" name="Changes" comment="" />
+      <created>1679218971218</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1679218971218</updated>
+      <workItem from="1679218972386" duration="4511000" />
+      <workItem from="1679223495008" duration="161000" />
+      <workItem from="1679223669263" duration="20000" />
+      <workItem from="1679223701282" duration="21684000" />
+      <workItem from="1679270163227" duration="843000" />
+      <workItem from="1679304529252" duration="12287000" />
+      <workItem from="1679324842149" duration="1813000" />
+      <workItem from="1679437150863" duration="11654000" />
+    </task>
+    <task id="LOCAL-00001" summary="One pipe works, nothing else">
+      <created>1679246102033</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1679246102033</updated>
+    </task>
+    <task id="LOCAL-00002" summary="renamed">
+      <created>1679246130970</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1679246130970</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Steps 1 and 2 work perfectly">
+      <created>1679248854314</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1679248854314</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Only one exit needed after doing cd">
+      <created>1679249452506</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1679249452506</updated>
+    </task>
+    <task id="LOCAL-00005" summary="SOme calculation works">
+      <created>1679250696883</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1679250696883</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Mycalc works">
+      <created>1679259698400</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1679259698400</updated>
+    </task>
+    <task id="LOCAL-00007" summary="mytime prints the time correcly">
+      <created>1679260277728</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1679260277728</updated>
+    </task>
+    <task id="LOCAL-00008" summary="1 &amp; 2 commands work with pipes, 3 to be done as well as n commands">
+      <created>1679314737110</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1679314737110</updated>
+    </task>
+    <task id="LOCAL-00009" summary="output redirectoins work with 1 command">
+      <created>1679316461489</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1679316461489</updated>
+    </task>
+    <task id="LOCAL-00010" summary="Output code there, but never shows to temrinal, the code is commented">
+      <created>1679317249709</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1679317249709</updated>
+    </task>
+    <task id="LOCAL-00011" summary="Everything works again">
+      <created>1679437592281</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1679437592281</updated>
+    </task>
+    <task id="LOCAL-00012" summary="3 pipes working !!!">
+      <created>1679438997583</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1679438997583</updated>
+    </task>
+    <task id="LOCAL-00013" summary="8 pipes forking in a loop, but error of the type : Bad file descriptor">
+      <created>1679444212406</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1679444212406</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Zip created, but n pipes work only on ubuntu 22">
+      <created>1679446365279</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1679446365279</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Edu's tests, ignore them">
+      <created>1679447575654</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1679447575654</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Added error_4commands_3greps.txt">
+      <created>1679448221954</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1679448221954</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="One pipe works, nothing else" />
+    <MESSAGE value="renamed" />
+    <MESSAGE value="Steps 1 and 2 work perfectly" />
+    <MESSAGE value="Only one exit needed after doing cd" />
+    <MESSAGE value="SOme calculation works" />
+    <MESSAGE value="Mycalc works" />
+    <MESSAGE value="mytime prints the time correcly" />
+    <MESSAGE value="1 &amp; 2 commands work with pipes, 3 to be done as well as n commands" />
+    <MESSAGE value="output redirectoins work with 1 command" />
+    <MESSAGE value="Output code there, but never shows to temrinal, the code is commented" />
+    <MESSAGE value="Everything works again" />
+    <MESSAGE value="3 pipes working !!!" />
+    <MESSAGE value="8 pipes forking in a loop, but error of the type : Bad file descriptor" />
+    <MESSAGE value="Zip created, but n pipes work only on ubuntu 22" />
+    <MESSAGE value="Edu's tests, ignore them" />
+    <MESSAGE value="Added error_4commands_3greps.txt" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added error_4commands_3greps.txt" />
+  </component>
+</project>

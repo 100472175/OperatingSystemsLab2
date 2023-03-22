@@ -393,8 +393,8 @@ int main(int argc, char* argv[]) {
                             if (i == 0) {
                                 if (pid[i] == 0) {
                                     // First process, redirect input if aplicable
-                                    /*
-                                    if (0 != (int) filev[0][0]){
+
+                                    if (filev[0][0] != '0') {
                                         fd_open = open(filev[0], O_RDONLY);
                                         if (fd_open == -1) {
                                             perror("open");
@@ -404,7 +404,7 @@ int main(int argc, char* argv[]) {
                                         dup(fd_open);
                                         close(fd_open);
                                     }
-                                     */
+
                                     // First process, redirect output
                                     close(STDOUT_FILENO);
                                     dup(fd[i][1]);
