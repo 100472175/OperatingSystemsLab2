@@ -363,8 +363,7 @@ int main(int argc, char* argv[]) {
                                 waitpid(pid_wc, &status, 0);
                             }
                         }
-                    } else if (command_counter > 3) {
-                        /*
+                    } else if(command_counter > 3) {
                         pid_t a = fork();
                         if (a==0) {
                             getCompleteCommand(argvv, 0);
@@ -372,26 +371,24 @@ int main(int argc, char* argv[]) {
                         } else {
                             waitpid(a, &status, 0);
                         }
-                         */
                         // --------------- n commands -----------------------------------------------------------
-                        int fd[command_counter - 1][2];
-                        for (int i = 0; i < command_counter - 1; i++) {
+                        int fd[num_commands-1][2];
+                        for (int i = 0; i < num_commands-1; i++) {
                             if (pipe(fd[i]) == -1) {
                                 perror("pipe");
                                 exit(EXIT_FAILURE);
                             }
                         }
-                        pid_t pid[command_counter];
+                        pid_t pid[num_commands];
 
 
-                        for (int i = 0; i < command_counter; i++) {
+                        for (int i = 0; i < command_counter; i++){
                             pid[i] = fork();
                             if (pid[i] == -1) {
                                 perror("fork\n");
                                 exit(EXIT_FAILURE);
-                            }
-                            if (i == 0) {
-                                if (pid[i] == 0) {
+                            } if (i == 0) {
+                                if (pid[i] == 0){
                                     // First process, redirect input if aplicable
                                     /*
                                     if (0 != (int) filev[0][0]){
@@ -414,24 +411,21 @@ int main(int argc, char* argv[]) {
                                     close(fd[i][0]);
 
                                     // Execution
-                                    //perror("Primera ejecución\n");
+                                    perror("Primera ejecución\n");
                                     getCompleteCommand(argvv, i);
                                     execvp(argv_execvp[0], argv_execvp);
                                     perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    // Close
                                     close(fd[i][1]);
-                                    wait(NULL);
                                 }
-                            }
-                            if (i == command_counter - 1) {
+                            } if (i == command_counter - 1){
                                 // Last one
-                                if (pid[i] == 0) {
+                                if (pid[i] == 0){
                                     //printf("%d at line %d", filev[1][0], __LINE__);
                                     // Last process, redirect input
                                     close(STDIN_FILENO);
-                                    if (strcmp(filev[1], "0") != 0) {
+                                    if (strcmp(filev[1], "0") != 0){
                                         fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
                                         if (fd_read == -1) {
                                             perror("open");
@@ -443,8 +437,8 @@ int main(int argc, char* argv[]) {
                                         }
                                         close(fd_read);
                                     } else {
-                                        dup(fd[i - 1][0]);
-                                        close(fd[i - 1][0]);
+                                        dup(fd[i-1][0]);
+                                        close(fd[i-1][0]);
                                     }
 
                                     // // Close
@@ -458,15 +452,15 @@ int main(int argc, char* argv[]) {
                                     perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    close(fd[i - 1][0]);
+                                    close(fd[i-1][0]);
                                     if (!in_background) {
-                                        for (int j = 0; j < num_commands; j++) {
-                                            wait(NULL);
+                                        for (int j = 0; j < num_commands; j++){
                                             waitpid(pid[j], &status, 0);
                                         }
                                     }
                                 }
                             } else {
+                                // Middle ones ---------------------------------------------------
                                 if (pid[i] == 0) {
                                     // Redirect input
                                     close(STDIN_FILENO);
@@ -486,13 +480,12 @@ int main(int argc, char* argv[]) {
                                     close(fd[i][0]);
 
                                     // Execution
-                                    //perror("Ejecución número\n");
+                                    perror("Ejecución número\n");
                                     getCompleteCommand(argvv, i);
                                     execvp(argv_execvp[0], argv_execvp);
-                                    //perror("execvp");
+                                    perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    waitpid(pid[i], &status, 0);
                                     close(fd[i - 1][0]);
                                     close(fd[i][1]);
                                 }
