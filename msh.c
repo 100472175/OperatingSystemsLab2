@@ -364,7 +364,13 @@ int main(int argc, char* argv[]) {
                             }
                         }
                     } else if(command_counter > 3) {
-
+                        pid_t a = fork();
+                        if (a==0) {
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+                        } else {
+                            waitpid(a, &status, 0);
+                        }
                         // --------------- n commands -----------------------------------------------------------
                         int fd[num_commands-1][2];
                         for (int i = 0; i < num_commands-1; i++) {
@@ -376,13 +382,10 @@ int main(int argc, char* argv[]) {
                         pid_t pid[num_commands];
 
 
-
-                        // Part for < and > and !> redirection
-
                         for (int i = 0; i < command_counter; i++){
                             pid[i] = fork();
                             if (pid[i] == -1) {
-                                perror("fork");
+                                perror("fork\n");
                                 exit(EXIT_FAILURE);
                             } if (i == 0) {
                                 if (pid[i] == 0){
@@ -399,7 +402,6 @@ int main(int argc, char* argv[]) {
                                         close(fd_open);
                                     }
                                      */
-
                                     // First process, redirect output
                                     close(STDOUT_FILENO);
                                     dup(fd[i][1]);
@@ -420,7 +422,6 @@ int main(int argc, char* argv[]) {
                             } if (i == command_counter - 1){
                                 // Last one
                                 if (pid[i] == 0){
-
                                     //printf("%d at line %d", filev[1][0], __LINE__);
                                     // Last process, redirect input
                                     close(STDIN_FILENO);
@@ -452,7 +453,6 @@ int main(int argc, char* argv[]) {
                                     exit(EXIT_FAILURE);
                                 } else {
                                     close(fd[i-1][0]);
-
                                     if (!in_background) {
                                         for (int j = 0; j < num_commands; j++){
                                             waitpid(pid[j], &status, 0);
