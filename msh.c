@@ -428,23 +428,23 @@ int main(int argc, char* argv[]) {
                             if (i == command_counter - 1) {
                                 // Last one
                                 if (pid[i] == 0) {
-                                    //printf("%d at line %d", filev[1][0], __LINE__);
                                     // Last process, redirect input
                                     close(STDIN_FILENO);
+                                    dup(fd[i - 1][0]);
+                                    close(fd[i - 1][0]);
+                                    // If there is an output redirection::
                                     if (strcmp(filev[1], "0") != 0) {
                                         fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
                                         if (fd_read == -1) {
                                             perror("open");
                                             exit(EXIT_FAILURE);
                                         }
+                                        close(STDOUT_FILENO);
                                         if ((dupfd = dup(fd_read) == -1)) {
                                             perror("dup");
                                             exit(EXIT_FAILURE);
                                         }
                                         close(fd_read);
-                                    } else {
-                                        dup(fd[i - 1][0]);
-                                        close(fd[i - 1][0]);
                                     }
 
                                     // // Close
