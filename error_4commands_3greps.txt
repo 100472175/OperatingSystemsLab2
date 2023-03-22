@@ -1,0 +1,56 @@
+MSH>>ls -al | grep rw | grep .c | wc
+total 188
+drwxrwxr-x 6 eduardo eduardo  4096 mar 22 02:20  .
+drwxrwxr-x 4 eduardo eduardo  4096 mar 20 15:48  ..
+-rwxrwxr-x 1 eduardo eduardo 16208 mar 20 15:55  alfonso
+-rw-rw-r-- 1 eduardo eduardo    66 mar 19 18:25  authors.txt
+-rwxrwxr-x 1 eduardo eduardo 11863 mar 18 19:26  checker_os_p2.sh
+drwxrwxr-x 2 eduardo eduardo  4096 mar 19 22:25  docs
+drwxrwxr-x 8 eduardo eduardo  4096 mar 22 02:12  .git
+drwxrwxr-x 2 eduardo eduardo  4096 mar 22 02:16  .idea
+-rw-rw-r-- 1 eduardo eduardo 21136 mar 18 19:26  libparser.so
+-rw-rw-r-- 1 eduardo eduardo  1465 mar 19 11:02  list
+-rw-rw-r-- 1 eduardo eduardo   251 mar 18 19:26  Makefile
+-rwxrwxr-x 1 eduardo eduardo 21576 mar 22 02:20  msh
+-rw-rw-r-- 1 eduardo eduardo 20266 mar 22 01:46  msh_backup.c
+-rw-rw-r-- 1 eduardo eduardo 20320 mar 22 02:19  msh.c
+-rw-rw-r-- 1 eduardo eduardo 14552 mar 22 02:20  msh.o
+-rw-rw-r-- 1 eduardo eduardo  3737 mar 22 01:46  os_p2_100472175_100472157_100460314.zip
+-rw-rw-r-- 1 eduardo eduardo  2978 mar 22 01:46  pruebas_checker_3pipes
+-rw-rw-r-- 1 eduardo eduardo  2319 mar 19 18:14 'pruebas meh'
+-rw-rw-r-- 1 eduardo eduardo  5776 mar 19 12:05  pruebas_validas
+drwxrwxr-x 2 eduardo eduardo  4096 mar 22 02:12  tests
+Primera ejecución
+: Bad file descriptor
+Ejecución número
+: Bad file descriptor
+MSH>>Ejecución número
+: Bad file descriptor
+Unable to read command. Terminating.
+: Bad file descriptor
+eduardo@lenovo-t580:~/CLionProjects/OperatingSystemsLab2$ wc: 'standard input': Bad file descriptorgrep:
+(standard input)0 0 0
+wc: -: Bad file descriptor
+: Bad file descriptor
+grep: (standard input): Bad file descriptor
+total 188
+drwxrwxr-x 6 eduardo eduardo  4096 mar 22 02:20  .
+drwxrwxr-x 4 eduardo eduardo  4096 mar 20 15:48  ..
+-rwxrwxr-x 1 eduardo eduardo 16208 mar 20 15:55  alfonso
+-rw-rw-r-- 1 eduardo eduardo    66 mar 19 18:25  authors.txt
+-rwxrwxr-x 1 eduardo eduardo 11863 mar 18 19:26  checker_os_p2.sh
+drwxrwxr-x 2 eduardo eduardo  4096 mar 19 22:25  docs
+drwxrwxr-x 8 eduardo eduardo  4096 mar 22 02:12  .git
+drwxrwxr-x 2 eduardo eduardo  4096 mar 22 02:16  .idea
+-rw-rw-r-- 1 eduardo eduardo 21136 mar 18 19:26  libparser.so
+-rw-rw-r-- 1 eduardo eduardo  1465 mar 19 11:02  list
+-rw-rw-r-- 1 eduardo eduardo   251 mar 18 19:26  Makefile
+-rwxrwxr-x 1 eduardo eduardo 21576 mar 22 02:20  msh
+-rw-rw-r-- 1 eduardo eduardo 20266 mar 22 01:46  msh_backup.c
+-rw-rw-r-- 1 eduardo eduardo 20320 mar 22 02:19  msh.c
+-rw-rw-r-- 1 eduardo eduardo 14552 mar 22 02:20  msh.o
+-rw-rw-r-- 1 eduardo eduardo  3737 mar 22 01:46  os_p2_100472175_100472157_100460314.zip
+-rw-rw-r-- 1 eduardo eduardo  2978 mar 22 01:46  pruebas_checker_3pipes
+-rw-rw-r-- 1 eduardo eduardo  2319 mar 19 18:14 'pruebas meh'
+-rw-rw-r-- 1 eduardo eduardo  5776 mar 19 12:05  pruebas_validas
+drwxrwxr-x 2 eduardo eduardo  4096 mar 22 02:12  tests

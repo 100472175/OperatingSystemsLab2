@@ -1,0 +1,152 @@
+/*
+        if (command_counter > 0) {
+            if (command_counter > MAX_COMMANDS) {
+                printf("Error: Maximum number of commands is %d \n", MAX_COMMANDS);
+            } else {
+                int num_pipes = command_counter - 1;
+                int pipe_fds[num_pipes][2];
+
+                // Create the necessary pipes to execute all commands
+                for (int i = 0; i < num_pipes; i++) {
+                    if (pipe(pipe_fds[i]) < 0) {
+                        perror("pipe");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+
+                // Execute commands in order
+                // Crate the forks
+                for (int i = 0; i < command_counter; i++) {
+                    pid_t pid = fork();
+
+                    if (pid < 0) {
+                        perror("Error in fork");
+                        exit(-1); // Same as exit(EXIT_FAILURE);
+                    } else if (pid == 0) {
+                        // Child process
+
+                        // Set up pipes
+                        if (i < num_pipes) {
+                            // Redirect the output to a pipe, instead of the standard output
+                            if (dup2(pipe_fds[i][1], STDOUT_FILENO) < 0) {
+                                perror("dup2");
+                                exit(-1);
+                            }
+                            // CLose the original pipe
+                            close(pipe_fds[i][0]);
+                        }
+                        // For every pipe except the first one, the inputs needs to come from a pipe, therefore
+                        // the input for the next command must also be changed.
+                        // This means instead of getting the arguments from the standard input, it will get it from
+                        // a pipe, which we set up just before
+                        if (i > 0) {
+                            if (dup2(pipe_fds[i - 1][0], STDIN_FILENO) < 0) {
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                            close(pipe_fds[i - 1][1]);
+                        }
+
+                        // Execute command
+                        //Distinction fi the command is a cd, as this can not be executed by the execvp
+                        if (argvv[i][0] == "cd"){
+                            printf("HI, this was a cd");
+                        }
+
+
+                        if (execvp(argvv[i][0], argvv[i]) < 0) {
+                            perror("execvp failed");
+                            exit(EXIT_FAILURE); // Same as exit(-1); but more compatible with other platforms
+                        }
+                    }
+                }
+
+                // Close all pipes
+                for (int i = 0; i < num_pipes; i++) {
+                    close(pipe_fds[i][0]);
+                    close(pipe_fds[i][1]);
+                }
+
+                // Wait for all children to finish
+                for (int i = 0; i < command_counter; i++) {
+                    int status;
+                    wait(&status);
+                }
+            }
+        }
+    }
+    return 0;
+}
+
+*/
+
+        // Works the first pipe
+        /*
+        if (command_counter > 0) {
+            if (command_counter > MAX_COMMANDS) {
+                printf("Error: Maximum number of commands is %d \n", MAX_COMMANDS);
+            } else {
+                int num_pipes = command_counter - 1;
+                int pipe_fds[num_pipes][2];
+
+                // Create the necessary pipes to execute all commands
+                for (int i = 0; i < num_pipes; i++) {
+                    if (pipe(pipe_fds[i]) < 0) {
+                        perror("pipe");
+                        exit(EXIT_FAILURE);
+                    }
+                }
+
+                // Execute commands in order
+                for (int i = 0; i < command_counter; i++) {
+                    pid_t pid = fork();
+
+                    if (pid < 0) {
+                        perror("Error in fork");
+                        exit(EXIT_FAILURE);
+                    } else if (pid == 0) {
+                        // Child process
+
+                        // Redirect the input from the previous pipe, if applicable
+                        if (i > 0) {
+                            if (dup2(pipe_fds[i - 1][0], STDIN_FILENO) < 0) {
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                            close(pipe_fds[i - 1][1]);
+                        }
+
+                        // Redirect the output to the next pipe, if applicable
+                        if (i < num_pipes) {
+                            if (dup2(pipe_fds[i][1], STDOUT_FILENO) < 0) {
+                                perror("dup2");
+                                exit(EXIT_FAILURE);
+                            }
+                            close(pipe_fds[i][0]);
+                        }
+
+                        // Execute command
+                        if (execvp(argvv[i][0], argvv[i]) < 0) {
+                            perror("execvp failed");
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+                }
+
+                // Close all pipes in the parent process
+                for (int i = 0; i < num_pipes; i++) {
+                    close(pipe_fds[i][0]);
+                    close(pipe_fds[i][1]);
+                }
+
+                // Wait for all children to finish
+                for (int i = 0; i < command_counter; i++) {
+                    int status;
+                    wait(&status);
+                }
+            }
+        }
+    }
+    return 0;
+}
+         */
