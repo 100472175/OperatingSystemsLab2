@@ -1,0 +1,4 @@
+Source File: /home/eduardo/CLionProjects/OperatingSystemsLab2/msh.c
+Compiler Options:  -Wno-implicit-function-declaration  msh.c -I. -L. -lparser -lpthread -Wl,-rpath=.,-z muldefs
+Workink Directory: /home/eduardo/CLionProjects/OperatingSystemsLab2
+Environtment Variables: LD_LIBRARY_PATH=/home/eduardo/CLionProjects/OperatingSystemsLab2
