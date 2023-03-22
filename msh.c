@@ -209,9 +209,38 @@ int main(int argc, char* argv[]) {
                         */
 
                         // 2. Child process: execute the command:
+                        int fd[2];
+                        if (pipe(fd) == -1) {
+                            perror("pipe");
+                            exit(EXIT_FAILURE);
+                        }
                         pid_t pid = fork();
                         if (pid == 0) {
-
+                            // Input redirection:
+                            if (filev[0][0] != '0') {
+                                fd_open = open(filev[0], O_RDONLY);
+                                if (fd_open == -1) {
+                                    perror("open");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(STDIN_FILENO);
+                                dup(fd_open);
+                                close(fd_open);
+                            }
+                            // If there is an output redirection
+                            if (strcmp(filev[1], "0") != 0) {
+                                fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                                if (fd_read == -1) {
+                                    perror("open");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(STDOUT_FILENO);
+                                if ((dupfd = dup(fd_read) == -1)) {
+                                    perror("dup");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(fd_read);
+                            }
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
 
@@ -229,13 +258,23 @@ int main(int argc, char* argv[]) {
                             exit(EXIT_FAILURE);
                         }
 
-                        pid_t pid_ls, pid_wc;
-                        pid_ls = fork();
-                        if (pid_ls == -1) {
+                        pid_t pid_1, pid_2;
+                        pid_1 = fork();
+                        if (pid_1 == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_ls == 0) {
-
+                        } else if (pid_1 == 0) {   // Child
+                            // Input redirection:
+                            if (filev[0][0] != '0') {
+                                fd_open = open(filev[0], O_RDONLY);
+                                if (fd_open == -1) {
+                                    perror("open");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(STDIN_FILENO);
+                                dup(fd_open);
+                                close(fd_open);
+                            }
                             close(fd[0]);
                             close(STDOUT_FILENO); // close(1);
                             dup(fd[1]);
@@ -246,14 +285,27 @@ int main(int argc, char* argv[]) {
                             exit(EXIT_FAILURE);
                         }
 
-                        pid_wc = fork();
-                        if (pid_wc == -1) {
+                        pid_2 = fork();
+                        if (pid_2 == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_wc == 0) {// Hijo
+                        } else if (pid_2 == 0) {    // Child
+                            // If there is an output redirection
+                            if (strcmp(filev[1], "0") != 0) {
+                                fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                                if (fd_read == -1) {
+                                    perror("open");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(STDOUT_FILENO);
+                                if ((dupfd = dup(fd_read) == -1)) {
+                                    perror("dup");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(fd_read);
+                            }
                             close(fd[1]);
                             close(STDIN_FILENO); // close(0);
-
                             dup(fd[0]);
                             close(fd[0]);
                             getCompleteCommand(argvv, 1);
@@ -264,9 +316,8 @@ int main(int argc, char* argv[]) {
                         close(fd[0]);
                         close(fd[1]);
                         if (in_background == 0) {
-                            //wait(NULL);
-                            waitpid(pid_ls, &status, 0);
-                            waitpid(pid_wc, &status, 0);
+                            waitpid(pid_1, &status, 0);
+                            waitpid(pid_2, &status, 0);
                         }
                     } else if (command_counter == 3) {
                         // ------------------ 3 commands -----------------------------------------------------------
@@ -278,11 +329,11 @@ int main(int argc, char* argv[]) {
                             exit(EXIT_FAILURE);
                         }
 
-                        pid_t pid_ls = fork();
-                        if (pid_ls == -1) {
+                        pid_t pid_1 = fork();
+                        if (pid_1 == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_ls == 0) {
+                        } else if (pid_1 == 0) {
                             //perror("Entro en el hijo del primero");
                             // Redirection
                             close(STDOUT_FILENO);
@@ -302,11 +353,11 @@ int main(int argc, char* argv[]) {
                             close(p1[1]);
                         }
 
-                        pid_t pid_grep = fork();
-                        if (pid_grep == -1) {
+                        pid_t pid_2 = fork();
+                        if (pid_2 == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_grep == 0) {
+                        } else if (pid_2 == 0) {
                             //perror("Entro en el hijo del segundo");
                             // Redirect input
                             close(STDIN_FILENO); // close(0);
@@ -335,11 +386,11 @@ int main(int argc, char* argv[]) {
                             close(p2[1]);
                         }
 
-                        pid_t pid_wc = fork();
-                        if (pid_wc == -1) {
+                        pid_t pid_3 = fork();
+                        if (pid_3 == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_wc == 0) {
+                        } else if (pid_3 == 0) {
                             //perror("Entro en el hijo del tercero");
                             // Redirect input
                             close(STDIN_FILENO);
@@ -358,9 +409,9 @@ int main(int argc, char* argv[]) {
                             close(p2[0]);
 
                             if (!in_background) {
-                                waitpid(pid_ls, &status, 0);
-                                waitpid(pid_grep, &status, 0);
-                                waitpid(pid_wc, &status, 0);
+                                waitpid(pid_1, &status, 0);
+                                waitpid(pid_2, &status, 0);
+                                waitpid(pid_3, &status, 0);
                             }
                         }
                     } else if (command_counter > 3) {
