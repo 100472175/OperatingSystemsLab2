@@ -31,9 +31,9 @@ int Acc = 0;
 
 void siginthandler(int param)
 {
-	printf("****  Exiting MSH **** \n");
-	//signal(SIGINT, siginthandler);
-	exit(0);
+    printf("****  Exiting MSH **** \n");
+    //signal(SIGINT, siginthandler);
+    exit(0);
 }
 
 
@@ -43,11 +43,11 @@ unsigned long  mytime = 0;
 
 void* timer_run ( )
 {
-	while (1)
-	{
-		usleep(1000);
-		mytime++;
-	}
+    while (1)
+    {
+        usleep(1000);
+        mytime++;
+    }
 }
 
 /**
@@ -58,13 +58,13 @@ void* timer_run ( )
  * @return
  */
 void getCompleteCommand(char*** argvv, int num_command) {
-	//reset first
-	for(int j = 0; j < 8; j++)
-		argv_execvp[j] = NULL;
+    //reset first
+    for(int j = 0; j < 8; j++)
+        argv_execvp[j] = NULL;
 
-	int i = 0;
-	for ( i = 0; argvv[num_command][i] != NULL; i++)
-		argv_execvp[i] = argvv[num_command][i];
+    int i = 0;
+    for ( i = 0; argvv[num_command][i] != NULL; i++)
+        argv_execvp[i] = argvv[num_command][i];
 }
 
 

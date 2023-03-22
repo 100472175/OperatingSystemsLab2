@@ -72,6 +72,10 @@ void getCompleteCommand(char*** argvv, int num_command) {
  * Main sheell  Loop
  */
 int main(int argc, char* argv[]) {
+    int fd_open;
+    int dupfd_open;
+    int fd_read;
+    int dupfd;
     /**** Do not delete this code.****/
     int end = 0;
     int executed_cmd_lines = -1;
@@ -130,40 +134,18 @@ int main(int argc, char* argv[]) {
                 //getCompleteCommand(argvv, 0);
                 if (strcmp(argvv[0][0], "exit") == 0) {
                     printf("exiting...\n");
-                    while (1){
+                    while (1) {
                         exit(0);
                     }
                     //exit(0);
                 } else if (strcmp(argvv[0][0], "mytime") == 0) {
-                    //printf("mytiming...\n");
-                    /*
-                    float reduced_time = mytime / 1000; // Seconds
-                    reduced_time = reduced_time / 60; // Minutes
-                    //reduced_time = reduced_time / 60; // Hours
-                    int hours, minutes, seconds = 0;
-                    hours = reduced_time / 3600;
-                    reduced_time = reduced_time - (hours * 3600);
-                    minutes = reduced_time / 60;
-                    reduced_time = reduced_time - (minutes * 60);
-                    seconds = reduced_time;
-                    printf("mytime: %i:%i:%i\n", hours, minutes, seconds);
-                     */
                     // Expressing the time from miliseconds to format HH:MM:SS
                     int hours = mytime / 3600000;
                     int minutes = (mytime % 3600000) / 60000;
                     int seconds = ((mytime % 3600000) % 60000) / 1000;
                     printf("mytime: %02d:%02d:%02d\n", hours, minutes, seconds);
-
                     //printf("mytime: %lu\n", mytime);
-                } else if (strcmp(argvv[0][0], "cd") == 0) {
-                    //printf("changing directory...\n");
-                    if (argvv[0][1] == NULL) {
-                        chdir(getenv("HOME"));
-                    } else {
-                        chdir(argvv[0][1]);
-                    }
 
-                // mycalc
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
                     if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
                         (argvv[0][4] != NULL)) {
@@ -192,112 +174,324 @@ int main(int argc, char* argv[]) {
                             printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
                     }
-                } else {
-
-                    // Calls to function for each command
-                    // Only 1 command works here, no pipes
-                    pid_t pid = fork();
-
-                    // 2. Child process: execute the command:
-                    if (pid == 0) {
-                        //char *argv[] = {"nohub sleep", "3", "&", NULL};
-                        //execvp(argv[0], argv);
-                        execvp(argvv[0][0], argvv[0]);
-
-                    } else if (pid > 0) {
-                        // 3. Parent process: wait for the child to finish:
-                        if (in_background == 0)
-                            waitpid(pid, &status, 0);
+                } else if (strcmp(argvv[0][0], "cd") == 0) {
+                    //printf("changing directory...\n");
+                    if (argvv[0][1] == NULL) {
+                        chdir(getenv("HOME"));
+                    } else {
+                        chdir(argvv[0][1]);
                     }
 
-                    /*
-                    // 3 Commands
-                    int pipefd[3][2]; // Pipes
-                    for (int i = 0; i < num_commands-1; i++) {
-                        if (pipe(pipefd[i]) == -1) {
+                } else {
+                    // To do the redirections
+
+
+                    if (command_counter == 1) {
+                        // ------------------ 1 command -----------------------------------------------------------
+                        // print_command(argvv, filev, in_background);
+                        //printf("num_commands: %d", command_counter);
+                        // Only 1 command works here, no pipes
+
+                        /*
+                        if (filev[1] != NULL) {
+                            int fd = open(filev[1], O_WRONLY | O_CREAT |O_TRUNC, 0644);
+                            if (fd == -1) {
+                                perror("open");
+                                exit(1);
+                            }
+                            close(STDOUT_FILENO); // close(1);
+                            if (dup(fd) == -1) {
+                                perror("dup");
+                                exit(1);
+                            }
+                            close(fd);
+                        }
+                        */
+
+                        // 2. Child process: execute the command:
+                        pid_t pid = fork();
+                        if (pid == 0) {
+
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+
+                        } else if (pid > 0) {
+                            // 3. Parent process: wait for the child to finish:
+                            if (in_background == 0)
+                                waitpid(pid, &status, 0);
+                        }
+                    }
+                    if (command_counter == 2) {
+                        // ------------------ 2 commands -----------------------------------------------------------
+                        int fd[2];
+                        if (pipe(fd) == -1) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
+
+                        pid_t pid_ls, pid_wc;
+                        pid_ls = fork();
+                        if (pid_ls == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_ls == 0) {
+
+                            close(fd[0]);
+                            close(STDOUT_FILENO); // close(1);
+                            dup(fd[1]);
+                            close(fd[1]);
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        }
+
+                        pid_wc = fork();
+                        if (pid_wc == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_wc == 0) {// Hijo
+                            close(fd[1]);
+                            close(STDIN_FILENO); // close(0);
+
+                            dup(fd[0]);
+                            close(fd[0]);
+                            getCompleteCommand(argvv, 1);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        }
+                        close(fd[0]);
+                        close(fd[1]);
+                        if (in_background == 0) {
+                            //wait(NULL);
+                            waitpid(pid_ls, &status, 0);
+                            waitpid(pid_wc, &status, 0);
+                        }
+                    } else if (command_counter == 3) {
+                        // ------------------ 3 commands -----------------------------------------------------------
+                        //printf("NOUP, 3 commands not supported yet\n");
+
+                        int p1[2], p2[2];
+                        if ((pipe(p1) == -1) || (pipe(p2) == -1)) {
+                            perror("pipe");
+                            exit(EXIT_FAILURE);
+                        }
+
+                        pid_t pid_ls = fork();
+                        if (pid_ls == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_ls == 0) {
+                            //perror("Entro en el hijo del primero");
+                            // Redirection
+                            close(STDOUT_FILENO);
+                            dup(p1[1]);
+
+                            // Specter Closer
+                            close(p1[1]);
+                            close(p1[0]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+
+                        } else {
+                            close(p1[1]);
+                        }
+
+                        pid_t pid_grep = fork();
+                        if (pid_grep == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_grep == 0) {
+                            //perror("Entro en el hijo del segundo");
+                            // Redirect input
+                            close(STDIN_FILENO); // close(0);
+                            dup(p1[0]);
+
+                            // Close
+                            close(p1[0]);
+                            close(p1[1]);
+
+                            // Redirect output
+                            close(STDOUT_FILENO);
+                            dup(p2[1]);
+
+                            // Close
+                            close(p1[0]); // Input
+                            close(p2[1]);
+                            close(p2[0]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 1);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        } else {
+                            close(p1[0]);
+                            close(p2[1]);
+                        }
+
+                        pid_t pid_wc = fork();
+                        if (pid_wc == -1) {
+                            perror("fork");
+                            exit(EXIT_FAILURE);
+                        } else if (pid_wc == 0) {
+                            //perror("Entro en el hijo del tercero");
+                            // Redirect input
+                            close(STDIN_FILENO);
+                            dup(p2[0]);
+
+                            // Close
+                            close(p2[0]);
+                            //close(p2[1]);
+
+                            // Execution
+                            getCompleteCommand(argvv, 2);
+                            execvp(argv_execvp[0], argv_execvp);
+                            perror("execvp");
+                            exit(EXIT_FAILURE);
+                        } else {
+                            close(p2[0]);
+
+                            if (!in_background) {
+                                waitpid(pid_ls, &status, 0);
+                                waitpid(pid_grep, &status, 0);
+                                waitpid(pid_wc, &status, 0);
+                            }
+                        }
+                    } else if(command_counter > 3) {
+                        pid_t a = fork();
+                        if (a==0) {
+                            getCompleteCommand(argvv, 0);
+                            execvp(argv_execvp[0], argv_execvp);
+                        } else {
+                            waitpid(a, &status, 0);
+                        }
+                        // --------------- n commands -----------------------------------------------------------
+                        int fd[num_commands-1][2];
+                        for (int i = 0; i < num_commands-1; i++) {
+                            if (pipe(fd[i]) == -1) {
+                                perror("pipe");
+                                exit(EXIT_FAILURE);
+                            }
+                        }
+                        pid_t pid[num_commands];
+
+
+                        for (int i = 0; i < command_counter; i++){
+                            pid[i] = fork();
+                            if (pid[i] == -1) {
+                                perror("fork\n");
+                                exit(EXIT_FAILURE);
+                            } if (i == 0) {
+                                if (pid[i] == 0){
+                                    // First process, redirect input if aplicable
+                                    /*
+                                    if (0 != (int) filev[0][0]){
+                                        fd_open = open(filev[0], O_RDONLY);
+                                        if (fd_open == -1) {
+                                            perror("open");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        close(STDIN_FILENO);
+                                        dup(fd_open);
+                                        close(fd_open);
+                                    }
+                                     */
+                                    // First process, redirect output
+                                    close(STDOUT_FILENO);
+                                    dup(fd[i][1]);
+
+                                    // Close
+                                    close(fd[i][1]);
+                                    close(fd[i][0]);
+
+                                    // Execution
+                                    perror("Primera ejecución\n");
+                                    getCompleteCommand(argvv, i);
+                                    execvp(argv_execvp[0], argv_execvp);
+                                    perror("execvp");
+                                    exit(EXIT_FAILURE);
+                                } else {
+                                    close(fd[i][1]);
+                                }
+                            } if (i == command_counter - 1){
+                                // Last one
+                                if (pid[i] == 0){
+                                    //printf("%d at line %d", filev[1][0], __LINE__);
+                                    // Last process, redirect input
+                                    close(STDIN_FILENO);
+                                    if (strcmp(filev[1], "0") != 0){
+                                        fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                                        if (fd_read == -1) {
+                                            perror("open");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        if ((dupfd = dup(fd_read) == -1)) {
+                                            perror("dup");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        close(fd_read);
+                                    } else {
+                                        dup(fd[i-1][0]);
+                                        close(fd[i-1][0]);
+                                    }
+
+                                    // // Close
+                                    // close(fd[i-1][0]);
+                                    // //close(fd[i-1][1]);
+
+                                    // Execution
+                                    //perror("Última ejecución\n");
+                                    getCompleteCommand(argvv, i);
+                                    execvp(argv_execvp[0], argv_execvp);
+                                    perror("execvp");
+                                    exit(EXIT_FAILURE);
+                                } else {
+                                    close(fd[i-1][0]);
+                                    if (!in_background) {
+                                        for (int j = 0; j < num_commands; j++){
+                                            waitpid(pid[j], &status, 0);
+                                        }
+                                    }
+                                }
+                            } else {
+                                // Middle ones -----------------------------------------------------
+                                if (pid[i] == 0) {
+                                    // Redirect input
+                                    close(STDIN_FILENO);
+                                    dup(fd[i - 1][0]);
+
+                                    // Close
+                                    close(fd[i - 1][0]);
+                                    close(fd[i - 1][1]);
+
+                                    // Redirect output
+                                    close(STDOUT_FILENO);
+                                    dup(fd[i][1]);
+
+                                    // Close
+                                    close(fd[i - 1][0]); // Input
+                                    close(fd[i][1]);
+                                    close(fd[i][0]);
+
+                                    // Execution
+                                    perror("Ejecución número\n");
+                                    getCompleteCommand(argvv, i);
+                                    execvp(argv_execvp[0], argv_execvp);
+                                    perror("execvp");
+                                    exit(EXIT_FAILURE);
+                                } else {
+                                    close(fd[i - 1][0]);
+                                    close(fd[i][1]);
+                                }
+                            }
+                        }
                     }
-
-                    pid_t pid1 = fork();
-                    if (pid1 == -1){
-                        perror("fork1");
-                        exit(EXIT_FAILURE);
-                    } else if (pid1 == 0){
-                        close(pipefd[0][0]); // Close unused read end of first pipe ----------------------------------
-                        dup2(pipefd[0][1], STDOUT_FILENO); // redirect standard output to write end of first pipe
-                        close(pipefd[1][0]); // close unused ends of second and third pipes
-                        close(pipefd[1][1]);
-                        close(pipefd[2][0]);
-                        close(pipefd[2][1]);
-                        getCompleteCommand(argvv, 0);
-                        execvp(argv_execvp[0], argv_execvp);
-                        perror("execvp");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    pid_t pid2 = fork();
-                    if (pid2 == -1){
-                        perror("fork2");
-                        exit(EXIT_FAILURE);
-                    } else if (pid2 == 0){
-                        close(pipefd[0][1]);
-                        dup2(pipefd[0][0], STDIN_FILENO);
-                        close(pipefd[1][0]);
-                        dup2(pipefd[1][1], STDOUT_FILENO);
-                        close(pipefd[2][0]);
-                        close(pipefd[2][1]);
-                        getCompleteCommand(argvv, 1);
-                        execvp(argv_execvp[0], argv_execvp);
-                        perror("execvp");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    pid_t pid3 = fork();
-                    if (pid3 == -1){
-                        perror("fork3");
-                        exit(EXIT_FAILURE);
-                    } else if (pid3 == 0){
-                        close(pipefd[0][0]);
-                        close(pipefd[0][1]);
-                        close(pipefd[1][1]);
-                        dup2(pipefd[1][0], STDIN_FILENO);
-                        close(pipefd[2][0]);
-                        dup2(pipefd[2][1], STDOUT_FILENO);
-                        getCompleteCommand(argvv, 2);
-                        execvp(argv_execvp[0], argv_execvp);
-                        perror("execvp");
-                        exit(EXIT_FAILURE);
-                    }
-
-                    close(pipefd[0][0]);
-                    close(pipefd[0][1]);
-                    close(pipefd[1][0]);
-                    close(pipefd[1][1]);
-                    close(pipefd[2][1]);
-
-
-
-                    // Read from pipe and print to stdout, unless redirect exists
-                    char buf[1024];
-                    int n;
-                    while ((n = read((long int)pipefd[2], buf, sizeof(buf))) > 0) {
-                        write(STDOUT_FILENO, buf, n); // Write to standard output
-                    }
-                        close(pipefd[2][0]);
-
-                    wait(NULL); // Wait for all children to finish
-                    return 0;
-                     */
-                    /*
-                    // Wait for all children to finish
-                    if (in_background == 1) {
-                        waitpid(pid1, &status, 0);
-                        waitpid(pid2, &status, 0);
-                        waitpid(pid3, &status, 0);
-                    */
-
                 }
             }
         }
