@@ -240,14 +240,13 @@ int main(int argc, char* argv[]) {
                                 waitpid(pid, &status, 0);
                         }
                     }
-                    if (command_counter == 2) {
+                    if (command_counter == 9) {
                         // ------------------ 2 commands -----------------------------------------------------------
                         int fd[2];
                         if (pipe(fd) == -1) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
-
                         pid_t pid_1, pid_2;
                         pid_1 = fork();
                         if (pid_1 == -1) {
@@ -309,16 +308,15 @@ int main(int argc, char* argv[]) {
                             waitpid(pid_1, &status, 0);
                             waitpid(pid_2, &status, 0);
                         }
-                    } else if (command_counter == 9) {
+                    }
+                    else if (command_counter == 9) {
                         // ------------------ 3 commands -----------------------------------------------------------
                         //printf("NOUP, 3 commands not supported yet\n");
-
                         int p1[2], p2[2];
                         if ((pipe(p1) == -1) || (pipe(p2) == -1)) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
-
                         pid_t pid_1 = fork();
                         if (pid_1 == -1) {
                             perror("fork");
@@ -332,7 +330,6 @@ int main(int argc, char* argv[]) {
                             // Specter Closer
                             close(p1[1]);
                             close(p1[0]);
-
                             // Execution
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
@@ -404,7 +401,8 @@ int main(int argc, char* argv[]) {
                                 waitpid(pid_3, &status, 0);
                             }
                         }
-                    } else if (command_counter > 2) {
+                    }
+                    else if (command_counter > 1) {
                         /*
                         pid_t a = fork();
                         if (a==0) {
