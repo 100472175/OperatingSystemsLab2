@@ -133,6 +133,12 @@ int main(int argc, char* argv[]) {
             if (command_counter > MAX_COMMANDS) {
                 printf("Too many commands. Maximum allowed: %d\n", MAX_COMMANDS);
             } else {
+                // If there is an error redirection, clean the file so the errors can go there
+                if (strcmp(filev[2], "0") != 0) {
+                    FILE *fp;
+                    fp = fopen(filev[2], "w");
+                    fclose(fp);
+                }
                 //getCompleteCommand(argvv, 0);
                 if (strcmp(argvv[0][0], "exit") == 0) {
                     printf("exiting...\n");
@@ -230,6 +236,19 @@ int main(int argc, char* argv[]) {
                                     exit(EXIT_FAILURE);
                                 }
                                 close(fd_read);
+                            }
+                            // If there is an error redirection
+                            if (strcmp(filev[2], "0") != 0) {
+                                fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666); // No truncation as we want to append the errors
+                                if (fd_read == -1) {
+                                    perror("open");
+                                    exit(EXIT_FAILURE);
+                                }
+                                close(STDERR_FILENO);
+                                if ((dupfd = dup(fd_read) == -1)) {
+                                    perror("dup");
+                                    exit(EXIT_FAILURE);
+                                }
                             }
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
@@ -432,7 +451,6 @@ int main(int argc, char* argv[]) {
                             if (i == 0) {
                                 if (pid[i] == 0) {
                                     // First process, redirect input if aplicable
-
                                     if (filev[0][0] != '0') {
                                         fd_open = open(filev[0], O_RDONLY);
                                         if (fd_open == -1) {
@@ -443,10 +461,22 @@ int main(int argc, char* argv[]) {
                                         dup(fd_open);
                                         close(fd_open);
                                     }
-
                                     // First process, redirect output
                                     close(STDOUT_FILENO);
                                     dup(fd[i][1]);
+                                    // First process error redirection if applicable
+                                    if (strcmp(filev[2], "0") != 0) {
+                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
+                                        if (fd_read == -1) {
+                                            perror("open");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        close(STDERR_FILENO);
+                                        if ((dupfd = dup(fd_read) == -1)) {
+                                            perror("dup");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                    }
 
                                     // Close
                                     close(fd[i][1]);
@@ -484,6 +514,19 @@ int main(int argc, char* argv[]) {
                                             exit(EXIT_FAILURE);
                                         }
                                         close(fd_read);
+                                    }
+                                    // Last process error redirection if applicable
+                                    if (strcmp(filev[2], "0") != 0) {
+                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
+                                        if (fd_read == -1) {
+                                            perror("open");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        close(STDERR_FILENO);
+                                        if ((dupfd = dup(fd_read) == -1)) {
+                                            perror("dup");
+                                            exit(EXIT_FAILURE);
+                                        }
                                     }
 
                                     // // Close
@@ -523,6 +566,20 @@ int main(int argc, char* argv[]) {
                                     close(fd[i - 1][0]); // Input
                                     close(fd[i][1]);
                                     close(fd[i][0]);
+
+                                    // First process error redirection if applicable
+                                    if (strcmp(filev[2], "0") != 0) {
+                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
+                                        if (fd_read == -1) {
+                                            perror("open");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                        close(STDERR_FILENO);
+                                        if ((dupfd = dup(fd_read) == -1)) {
+                                            perror("dup");
+                                            exit(EXIT_FAILURE);
+                                        }
+                                    }
 
                                     // Execution
                                     //perror("Ejecución número\n");
