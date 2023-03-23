@@ -75,6 +75,7 @@ int main(int argc, char* argv[]) {
     int dupfd_open;
     int fd_read;
     int dupfd;
+    char output_string[1000];
     long int Acc = 0;
     char *Acc_local;
     long int Acc_local_int = 0;
@@ -155,6 +156,13 @@ int main(int argc, char* argv[]) {
                     //printf("mytime: %lu\n", mytime);
 
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
+                    /*
+                    // Using pipes, we will send the result through the pipe to the STDERROR
+                    close(STDOUT_FILENO);
+                    dup(STDERR_FILENO);
+                    close(STDERR_FILENO);
+                     */
+                    // Command execution
                     if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
                         (argvv[0][4] != NULL)) {
                         printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
@@ -172,25 +180,30 @@ int main(int argc, char* argv[]) {
                             Acc_local = getenv("Acc");
                             if (Acc_local == NULL) {
                                 Acc += result;
-                                printf("[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, result);
+                                fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc);
                             } else {
                                 Acc_local_int = atoi(Acc_local);
                                 Acc_local_int += result;
                                 sprintf(Acc_local, "%li", Acc_local_int);
                                 setenv("Acc", Acc_local, 1);
-                                printf("[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc_local_int);
+                                fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc_local_int);
                             }
-
-                        } else if (strcmp(operator_str, "mul") == 0) {
+                        } else if (strcmp(operator_str, "mul") == 0) { // Multiplication
                             long result = first_number * second_number;
-                            printf("[OK] %li * %li = %li\n", first_number, second_number, result);
-                        } else if (strcmp(operator_str, "div") == 0) {
+                            fprintf(stderr, "[OK] %li * %li = %li\n", first_number, second_number, result);
+                        } else if (strcmp(operator_str, "div") == 0) { // Division
                             long result = first_number / second_number;
-                            printf("[OK] %li / %li = %li; Remainder %d\n", first_number, second_number, result,
+                            fprintf(stderr, "[OK] %li / %li = %li; Remainder %d\n", first_number, second_number, result,
                                    (int) first_number % (int) second_number);
                         } else {
-                            printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                            fprintf(stderr, "[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
+                        /*
+                        // Return the STDOUT to the original
+                        close(STDERR_FILENO);
+                        dup(STDOUT_FILENO);
+                        close(STDOUT_FILENO);
+                         */
                     }
                 } else if (strcmp(argvv[0][0], "cd") == 0) {
                     //printf("changing directory...\n");
