@@ -1,0 +1,92 @@
+[H[2J[3J*** TESTING THE MINISHELL 
+Archive:  os_p2_100472175_100472157_100460314.zip
+  inflating: msh.c                   
+  inflating: authors.txt             
+File : os_p2_100472175_100472157_100460314.zip
+Compiling
+OK
+Test1: 1 command -> Test command:  test1
+ OK
+Test2: 1 command + input redirection -> Test command:  test2
+ OK
+Test3: 1 command + output redirection ->  OK
+Test4: 1 command + error redirection ->  OK
+Test5: 2 commands -> Test command:  test5
+ OK
+Test6: 2 commands + input redirection ->  OK
+Test7: 2 commands + output redirection ->  OK
+Test8: 2 commands + error redirection ->  OK
+Test9: 3 commands -> Test command:  test8
+ OK
+Test10: 3 commands + input redirection ->  Error
+ === test === 
+grep 1      | grep a | wc -l < foo.txt
+ === Output ./msh  === 
+0
+ === Expected Output  === 
+1
+Test11: 3 commands + output redirection -> 2
+ Error
+ === test === 
+cat foo.txt | grep a | wc -l > salida_msh
+ === Output ./msh  === 
+0
+ === Expected Output  === 
+2
+Test12: 3 commands + error redirection ->  OK
+Test13: N commands -> Test command:  test11
+ OK
+Test14: Calculator 1 -> Files calc1.res and salida_msh differ
+ Error
+ === test === 
+mycalc 3 add -8
+ === Output ./msh  === 
+MSH>>MSH>> === Expected Output  === 
+MSH>>[OK] 3 + -8 = -5; Acc -5
+MSH>>
+Test15: Calculator 2 -> Files calc2.res and salida_msh differ
+ Error
+ === test === 
+mycalc 3 add -8
+mycalc 5 add 13
+env | grep Acc > var
+ === Output ./msh  === 
+MSH>>MSH>>MSH>>MSH>> === Expected Output  === 
+MSH>>[OK] 3 + -8 = -5; Acc -5
+MSH>>[OK] 5 + 13 = 18; Acc 13
+MSH>>MSH>>
+Test16: Calculator 3 -> Files calc3.res and salida_msh differ
+ Error
+ === test === 
+mycalc 3 mul 8
+ === Output ./msh  === 
+MSH>>MSH>> === Expected Output  === 
+MSH>>[OK] 3 * 8 = 24
+MSH>>
+Test17: Calculator 4 -> Files calc4.res and salida_msh differ
+ Error
+ === test === 
+mycalc 10 div 7
+ === Output ./msh  === 
+MSH>>MSH>> === Expected Output  === 
+MSH>>[OK] 10 / 7 = 1; Remainder 3
+MSH>>
+Test18: Calculator 5 ->  OK
+Test19: Calculator 6 ->  OK
+Test20: Calculator $Acc ->  Error
+ === test === 
+Use of environment variable
+ === Output ./msh  === 
+
+ === Expected Output  === 
+Acc=13
+Test21: time 1 ->  Error
+ === test === 
+mytime
+ === Output ./msh  === 
+MSH>>MSH>> === Expected Output  === 
+HH:MM:SS Format
+Test22: Background -> Test command:  test21
+ OK
+Summary of tests: -> 
+grade: 6.66

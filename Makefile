@@ -1,6 +1,6 @@
 CC=gcc
 FLAGS=-Wno-implicit-function-declaration
-CFLAGS=-I.
+CFLAGS=-I. -g 
 OBJ = msh.o 
 INC= parser.o
 LIBS=-lparser -lpthread

@@ -26,6 +26,7 @@ char filev[3][64];
 
 //to store the execvp second parameter
 char *argv_execvp[8];
+int Acc = 0;
 
 
 void siginthandler(int param)
@@ -36,14 +37,14 @@ void siginthandler(int param)
 }
 
 
-
 /* Timer */
 pthread_t timer_thread;
 unsigned long  mytime = 0;
 
 void* timer_run ( )
 {
-    while (1){
+    while (1)
+    {
         usleep(1000);
         mytime++;
     }
@@ -68,17 +69,13 @@ void getCompleteCommand(char*** argvv, int num_command) {
 
 
 /**
- * Main shell  Loop
+ * Main sheell  Loop
  */
 int main(int argc, char* argv[]) {
     int fd_open;
     int dupfd_open;
     int fd_read;
     int dupfd;
-    char output_string[1000];
-    long int Acc = 0;
-    char *Acc_local;
-    long int Acc_local_int = 0;
     /**** Do not delete this code.****/
     int end = 0;
     int executed_cmd_lines = -1;
@@ -134,12 +131,6 @@ int main(int argc, char* argv[]) {
             if (command_counter > MAX_COMMANDS) {
                 printf("Too many commands. Maximum allowed: %d\n", MAX_COMMANDS);
             } else {
-                // If there is an error redirection, clean the file so the errors can go there
-                if (strcmp(filev[2], "0") != 0) {
-                    FILE *fp;
-                    fp = fopen(filev[2], "w");
-                    fclose(fp);
-                }
                 //getCompleteCommand(argvv, 0);
                 if (strcmp(argvv[0][0], "exit") == 0) {
                     printf("exiting...\n");
@@ -149,61 +140,39 @@ int main(int argc, char* argv[]) {
                     //exit(0);
                 } else if (strcmp(argvv[0][0], "mytime") == 0) {
                     // Expressing the time from miliseconds to format HH:MM:SS
-                    unsigned long long hours = mytime / 3600000;
-                    unsigned long long minutes = (mytime % 3600000) / 60000;
-                    unsigned long long seconds = ((mytime % 3600000) % 60000) / 1000;
-                    printf("%02llu:%02llu:%02llu\n", hours, minutes, seconds);
+                    int hours = mytime / 3600000;
+                    int minutes = (mytime % 3600000) / 60000;
+                    int seconds = ((mytime % 3600000) % 60000) / 1000;
+                    printf("mytime: %02d:%02d:%02d\n", hours, minutes, seconds);
                     //printf("mytime: %lu\n", mytime);
 
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
-                    /*
-                    // Using pipes, we will send the result through the pipe to the STDERROR
-                    close(STDOUT_FILENO);
-                    dup(STDERR_FILENO);
-                    close(STDERR_FILENO);
-                     */
-                    // Command execution
                     if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
                         (argvv[0][4] != NULL)) {
-                        fprintf(stderr, "[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                        printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                     } else {
                         // 1. Get the first number
-                        long first_number = atol(argvv[0][1]);
+                        int first_number = atoi(argvv[0][1]);
                         // 2. Get the second number
-                        long second_number = atol(argvv[0][3]);
+                        int second_number = atoi(argvv[0][3]);
                         //printf("result: %i", first_number+second_number);
                         // 3. Get the operator + result + print
                         char operator_str[3];
                         strcpy(operator_str, argvv[0][2]);
                         if (strcmp(operator_str, "add") == 0) {
-                            long result = first_number + second_number;
-                            Acc_local = getenv("Acc");
-                            if (Acc_local == NULL) {
-                                Acc += result;
-                                fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc);
-                            } else {
-                                Acc_local_int = atoi(Acc_local);
-                                Acc_local_int += result;
-                                sprintf(Acc_local, "%li", Acc_local_int);
-                                setenv("Acc", Acc_local, 1);
-                                fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc_local_int);
-                            }
-                        } else if (strcmp(operator_str, "mul") == 0) { // Multiplication
-                            long result = first_number * second_number;
-                            fprintf(stderr, "[OK] %li * %li = %li\n", first_number, second_number, result);
-                        } else if (strcmp(operator_str, "div") == 0) { // Division
-                            long result = first_number / second_number;
-                            fprintf(stderr, "[OK] %li / %li = %li; Remainder %d\n", first_number, second_number, result,
-                                   (int) first_number % (int) second_number);
+                            int result = first_number + second_number;
+                            Acc += result;
+                            printf("[OK] %i + %i = %i; Acc %i\n", first_number, second_number, result, Acc);
+                        } else if (strcmp(operator_str, "mul") == 0) {
+                            int result = first_number * second_number;
+                            printf("[OK] %i * %i = %i\n", first_number, second_number, result);
+                        } else if (strcmp(operator_str, "div") == 0) {
+                            int result = first_number / second_number;
+                            printf("[OK] %i / %i = %i; Reminder %d\n", first_number, second_number, result,
+                                   first_number % second_number);
                         } else {
                             printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
-                        /*
-                        // Return the STDOUT to the original
-                        close(STDERR_FILENO);
-                        dup(STDOUT_FILENO);
-                        close(STDOUT_FILENO);
-                         */
                     }
                 } else if (strcmp(argvv[0][0], "cd") == 0) {
                     //printf("changing directory...\n");
@@ -213,56 +182,36 @@ int main(int argc, char* argv[]) {
                         chdir(argvv[0][1]);
                     }
 
-                } else { // Commands that need an execvp
+                } else {
+                    // To do the redirections
+
+
                     if (command_counter == 1) {
                         // ------------------ 1 command -----------------------------------------------------------
+                        // print_command(argvv, filev, in_background);
+                        //printf("num_commands: %d", command_counter);
+                        // Only 1 command works here, no pipes
 
-                        // Child process: execute the command:
-                        int fd[2];
-                        if (pipe(fd) == -1) {
-                            perror("pipe");
-                            exit(EXIT_FAILURE);
+                        /*
+                        if (filev[1] != NULL) {
+                            int fd = open(filev[1], O_WRONLY | O_CREAT |O_TRUNC, 0644);
+                            if (fd == -1) {
+                                perror("open");
+                                exit(1);
+                            }
+                            close(STDOUT_FILENO); // close(1);
+                            if (dup(fd) == -1) {
+                                perror("dup");
+                                exit(1);
+                            }
+                            close(fd);
                         }
+                        */
+
+                        // 2. Child process: execute the command:
                         pid_t pid = fork();
                         if (pid == 0) {
-                            // Input redirection:
-                            if (filev[0][0] != '0') {
-                                fd_open = open(filev[0], O_RDONLY);
-                                if (fd_open == -1) {
-                                    perror("open");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(STDIN_FILENO);
-                                dup(fd_open);
-                                close(fd_open);
-                            }
-                            // If there is an output redirection
-                            if (strcmp(filev[1], "0") != 0) {
-                                fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-                                if (fd_read == -1) {
-                                    perror("open");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(STDOUT_FILENO);
-                                if ((dupfd = dup(fd_read) == -1)) {
-                                    perror("dup");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(fd_read);
-                            }
-                            // If there is an error redirection
-                            if (strcmp(filev[2], "0") != 0) {
-                                fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666); // No truncation as we want to append the errors
-                                if (fd_read == -1) {
-                                    perror("open");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(STDERR_FILENO);
-                                if ((dupfd = dup(fd_read) == -1)) {
-                                    perror("dup");
-                                    exit(EXIT_FAILURE);
-                                }
-                            }
+
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
 
@@ -272,30 +221,21 @@ int main(int argc, char* argv[]) {
                                 waitpid(pid, &status, 0);
                         }
                     }
-                    if (command_counter == 9) {
+                    if (command_counter == 2) {
                         // ------------------ 2 commands -----------------------------------------------------------
                         int fd[2];
                         if (pipe(fd) == -1) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
-                        pid_t pid_1, pid_2;
-                        pid_1 = fork();
-                        if (pid_1 == -1) {
+
+                        pid_t pid_ls, pid_wc;
+                        pid_ls = fork();
+                        if (pid_ls == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_1 == 0) {   // Child
-                            // Input redirection:
-                            if (filev[0][0] != '0') {
-                                fd_open = open(filev[0], O_RDONLY);
-                                if (fd_open == -1) {
-                                    perror("open");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(STDIN_FILENO);
-                                dup(fd_open);
-                                close(fd_open);
-                            }
+                        } else if (pid_ls == 0) {
+
                             close(fd[0]);
                             close(STDOUT_FILENO); // close(1);
                             dup(fd[1]);
@@ -306,27 +246,14 @@ int main(int argc, char* argv[]) {
                             exit(EXIT_FAILURE);
                         }
 
-                        pid_2 = fork();
-                        if (pid_2 == -1) {
+                        pid_wc = fork();
+                        if (pid_wc == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_2 == 0) {    // Child
-                            // If there is an output redirection
-                            if (strcmp(filev[1], "0") != 0) {
-                                fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
-                                if (fd_read == -1) {
-                                    perror("open");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(STDOUT_FILENO);
-                                if ((dupfd = dup(fd_read) == -1)) {
-                                    perror("dup");
-                                    exit(EXIT_FAILURE);
-                                }
-                                close(fd_read);
-                            }
+                        } else if (pid_wc == 0) {// Hijo
                             close(fd[1]);
                             close(STDIN_FILENO); // close(0);
+
                             dup(fd[0]);
                             close(fd[0]);
                             getCompleteCommand(argvv, 1);
@@ -337,23 +264,25 @@ int main(int argc, char* argv[]) {
                         close(fd[0]);
                         close(fd[1]);
                         if (in_background == 0) {
-                            waitpid(pid_1, &status, 0);
-                            waitpid(pid_2, &status, 0);
+                            //wait(NULL);
+                            waitpid(pid_ls, &status, 0);
+                            waitpid(pid_wc, &status, 0);
                         }
-                    }
-                    else if (command_counter == 9) {
+                    } else if (command_counter == 3) {
                         // ------------------ 3 commands -----------------------------------------------------------
                         //printf("NOUP, 3 commands not supported yet\n");
+
                         int p1[2], p2[2];
                         if ((pipe(p1) == -1) || (pipe(p2) == -1)) {
                             perror("pipe");
                             exit(EXIT_FAILURE);
                         }
-                        pid_t pid_1 = fork();
-                        if (pid_1 == -1) {
+
+                        pid_t pid_ls = fork();
+                        if (pid_ls == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_1 == 0) {
+                        } else if (pid_ls == 0) {
                             //perror("Entro en el hijo del primero");
                             // Redirection
                             close(STDOUT_FILENO);
@@ -362,6 +291,7 @@ int main(int argc, char* argv[]) {
                             // Specter Closer
                             close(p1[1]);
                             close(p1[0]);
+
                             // Execution
                             getCompleteCommand(argvv, 0);
                             execvp(argv_execvp[0], argv_execvp);
@@ -372,11 +302,11 @@ int main(int argc, char* argv[]) {
                             close(p1[1]);
                         }
 
-                        pid_t pid_2 = fork();
-                        if (pid_2 == -1) {
+                        pid_t pid_grep = fork();
+                        if (pid_grep == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_2 == 0) {
+                        } else if (pid_grep == 0) {
                             //perror("Entro en el hijo del segundo");
                             // Redirect input
                             close(STDIN_FILENO); // close(0);
@@ -405,11 +335,11 @@ int main(int argc, char* argv[]) {
                             close(p2[1]);
                         }
 
-                        pid_t pid_3 = fork();
-                        if (pid_3 == -1) {
+                        pid_t pid_wc = fork();
+                        if (pid_wc == -1) {
                             perror("fork");
                             exit(EXIT_FAILURE);
-                        } else if (pid_3 == 0) {
+                        } else if (pid_wc == 0) {
                             //perror("Entro en el hijo del tercero");
                             // Redirect input
                             close(STDIN_FILENO);
@@ -428,14 +358,12 @@ int main(int argc, char* argv[]) {
                             close(p2[0]);
 
                             if (!in_background) {
-                                waitpid(pid_1, &status, 0);
-                                waitpid(pid_2, &status, 0);
-                                waitpid(pid_3, &status, 0);
+                                waitpid(pid_ls, &status, 0);
+                                waitpid(pid_grep, &status, 0);
+                                waitpid(pid_wc, &status, 0);
                             }
                         }
-                    }
-                    else if (command_counter > 1) {
-                        /*
+                    } else if(command_counter > 3) {
                         pid_t a = fork();
                         if (a==0) {
                             getCompleteCommand(argvv, 0);
@@ -443,28 +371,27 @@ int main(int argc, char* argv[]) {
                         } else {
                             waitpid(a, &status, 0);
                         }
-                         */
                         // --------------- n commands -----------------------------------------------------------
-                        int fd[command_counter - 1][2];
-                        for (int i = 0; i < command_counter - 1; i++) {
+                        int fd[num_commands-1][2];
+                        for (int i = 0; i < num_commands-1; i++) {
                             if (pipe(fd[i]) == -1) {
                                 perror("pipe");
                                 exit(EXIT_FAILURE);
                             }
                         }
-                        pid_t pid[command_counter];
+                        pid_t pid[num_commands];
 
 
-                        for (int i = 0; i < command_counter; i++) {
+                        for (int i = 0; i < command_counter; i++){
                             pid[i] = fork();
                             if (pid[i] == -1) {
                                 perror("fork\n");
                                 exit(EXIT_FAILURE);
-                            }
-                            if (i == 0) {
-                                if (pid[i] == 0) {
+                            } if (i == 0) {
+                                if (pid[i] == 0){
                                     // First process, redirect input if aplicable
-                                    if (filev[0][0] != '0') {
+                                    /*
+                                    if (0 != (int) filev[0][0]){
                                         fd_open = open(filev[0], O_RDONLY);
                                         if (fd_open == -1) {
                                             perror("open");
@@ -474,72 +401,44 @@ int main(int argc, char* argv[]) {
                                         dup(fd_open);
                                         close(fd_open);
                                     }
+                                     */
                                     // First process, redirect output
                                     close(STDOUT_FILENO);
                                     dup(fd[i][1]);
-                                    // First process error redirection if applicable
-                                    if (strcmp(filev[2], "0") != 0) {
-                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
-                                        if (fd_read == -1) {
-                                            perror("open");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                        close(STDERR_FILENO);
-                                        if ((dupfd = dup(fd_read) == -1)) {
-                                            perror("dup");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                    }
 
                                     // Close
                                     close(fd[i][1]);
                                     close(fd[i][0]);
 
                                     // Execution
-                                    //perror("Primera ejecución\n");
+                                    perror("Primera ejecución\n");
                                     getCompleteCommand(argvv, i);
                                     execvp(argv_execvp[0], argv_execvp);
                                     perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    // Close
                                     close(fd[i][1]);
-                                    wait(NULL);
                                 }
-                            }
-                            if (i == command_counter - 1) {
+                            } if (i == command_counter - 1){
                                 // Last one
-                                if (pid[i] == 0) {
+                                if (pid[i] == 0){
+                                    //printf("%d at line %d", filev[1][0], __LINE__);
                                     // Last process, redirect input
                                     close(STDIN_FILENO);
-                                    dup(fd[i - 1][0]);
-                                    close(fd[i - 1][0]);
-                                    // If there is an output redirection::
-                                    if (strcmp(filev[1], "0") != 0) {
+                                    if (strcmp(filev[1], "0") != 0){
                                         fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
                                         if (fd_read == -1) {
                                             perror("open");
                                             exit(EXIT_FAILURE);
                                         }
-                                        close(STDOUT_FILENO);
                                         if ((dupfd = dup(fd_read) == -1)) {
                                             perror("dup");
                                             exit(EXIT_FAILURE);
                                         }
                                         close(fd_read);
-                                    }
-                                    // Last process error redirection if applicable
-                                    if (strcmp(filev[2], "0") != 0) {
-                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
-                                        if (fd_read == -1) {
-                                            perror("open");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                        close(STDERR_FILENO);
-                                        if ((dupfd = dup(fd_read) == -1)) {
-                                            perror("dup");
-                                            exit(EXIT_FAILURE);
-                                        }
+                                    } else {
+                                        dup(fd[i-1][0]);
+                                        close(fd[i-1][0]);
                                     }
 
                                     // // Close
@@ -553,15 +452,15 @@ int main(int argc, char* argv[]) {
                                     perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    close(fd[i - 1][0]);
+                                    close(fd[i-1][0]);
                                     if (!in_background) {
-                                        for (int j = 0; j < num_commands; j++) {
-                                            wait(NULL);
+                                        for (int j = 0; j < num_commands; j++){
                                             waitpid(pid[j], &status, 0);
                                         }
                                     }
                                 }
                             } else {
+                                // Middle ones ---------------------------------------------------
                                 if (pid[i] == 0) {
                                     // Redirect input
                                     close(STDIN_FILENO);
@@ -580,28 +479,13 @@ int main(int argc, char* argv[]) {
                                     close(fd[i][1]);
                                     close(fd[i][0]);
 
-                                    // First process error redirection if applicable
-                                    if (strcmp(filev[2], "0") != 0) {
-                                        fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
-                                        if (fd_read == -1) {
-                                            perror("open");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                        close(STDERR_FILENO);
-                                        if ((dupfd = dup(fd_read) == -1)) {
-                                            perror("dup");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                    }
-
                                     // Execution
-                                    //perror("Ejecución número\n");
+                                    perror("Ejecución número\n");
                                     getCompleteCommand(argvv, i);
                                     execvp(argv_execvp[0], argv_execvp);
-                                    //perror("execvp");
+                                    perror("execvp");
                                     exit(EXIT_FAILURE);
                                 } else {
-                                    waitpid(pid[i], &status, 0);
                                     close(fd[i - 1][0]);
                                     close(fd[i][1]);
                                 }
