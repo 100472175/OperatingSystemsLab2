@@ -26,7 +26,6 @@ char filev[3][64];
 
 //to store the execvp second parameter
 char *argv_execvp[8];
-int Acc = 0;
 
 
 void siginthandler(int param)
@@ -37,14 +36,14 @@ void siginthandler(int param)
 }
 
 
+
 /* Timer */
 pthread_t timer_thread;
 unsigned long  mytime = 0;
 
 void* timer_run ( )
 {
-    while (1)
-    {
+    while (1){
         usleep(1000);
         mytime++;
     }
@@ -69,13 +68,16 @@ void getCompleteCommand(char*** argvv, int num_command) {
 
 
 /**
- * Main sheell  Loop
+ * Main shell  Loop
  */
 int main(int argc, char* argv[]) {
     int fd_open;
     int dupfd_open;
     int fd_read;
     int dupfd;
+    long int Acc = 0;
+    char *Acc_local;
+    long int Acc_local_int = 0;
     /**** Do not delete this code.****/
     int end = 0;
     int executed_cmd_lines = -1;
@@ -140,10 +142,10 @@ int main(int argc, char* argv[]) {
                     //exit(0);
                 } else if (strcmp(argvv[0][0], "mytime") == 0) {
                     // Expressing the time from miliseconds to format HH:MM:SS
-                    int hours = mytime / 3600000;
-                    int minutes = (mytime % 3600000) / 60000;
-                    int seconds = ((mytime % 3600000) % 60000) / 1000;
-                    printf("mytime: %02d:%02d:%02d\n", hours, minutes, seconds);
+                    unsigned long long hours = mytime / 3600000;
+                    unsigned long long minutes = (mytime % 3600000) / 60000;
+                    unsigned long long seconds = ((mytime % 3600000) % 60000) / 1000;
+                    printf("mytime: %02llu:%02llu:%02llu\n", hours, minutes, seconds);
                     //printf("mytime: %lu\n", mytime);
 
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
@@ -152,24 +154,34 @@ int main(int argc, char* argv[]) {
                         printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                     } else {
                         // 1. Get the first number
-                        int first_number = atoi(argvv[0][1]);
+                        long first_number = atol(argvv[0][1]);
                         // 2. Get the second number
-                        int second_number = atoi(argvv[0][3]);
+                        long second_number = atol(argvv[0][3]);
                         //printf("result: %i", first_number+second_number);
                         // 3. Get the operator + result + print
                         char operator_str[3];
                         strcpy(operator_str, argvv[0][2]);
                         if (strcmp(operator_str, "add") == 0) {
-                            int result = first_number + second_number;
-                            Acc += result;
-                            printf("[OK] %i + %i = %i; Acc %i\n", first_number, second_number, result, Acc);
+                            long result = first_number + second_number;
+                            Acc_local = getenv("Acc");
+                            if (Acc_local == NULL) {
+                                Acc += result;
+                                printf("[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, result);
+                            } else {
+                                Acc_local_int = atoi(Acc_local);
+                                Acc_local_int += result;
+                                sprintf(Acc_local, "%li", Acc_local_int);
+                                setenv("Acc", Acc_local, 1);
+                                printf("[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc_local_int);
+                            }
+
                         } else if (strcmp(operator_str, "mul") == 0) {
-                            int result = first_number * second_number;
-                            printf("[OK] %i * %i = %i\n", first_number, second_number, result);
+                            long result = first_number * second_number;
+                            printf("[OK] %li * %li = %li\n", first_number, second_number, result);
                         } else if (strcmp(operator_str, "div") == 0) {
-                            int result = first_number / second_number;
-                            printf("[OK] %i / %i = %i; Reminder %d\n", first_number, second_number, result,
-                                   first_number % second_number);
+                            long result = first_number / second_number;
+                            printf("[OK] %li / %li = %li; Remainder %d\n", first_number, second_number, result,
+                                   (int) first_number % (int) second_number);
                         } else {
                             printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
@@ -182,33 +194,11 @@ int main(int argc, char* argv[]) {
                         chdir(argvv[0][1]);
                     }
 
-                } else {
-                    // To do the redirections
-
-
+                } else { // Commands that need an execvp
                     if (command_counter == 1) {
                         // ------------------ 1 command -----------------------------------------------------------
-                        // print_command(argvv, filev, in_background);
-                        //printf("num_commands: %d", command_counter);
-                        // Only 1 command works here, no pipes
 
-                        /*
-                        if (filev[1] != NULL) {
-                            int fd = open(filev[1], O_WRONLY | O_CREAT |O_TRUNC, 0644);
-                            if (fd == -1) {
-                                perror("open");
-                                exit(1);
-                            }
-                            close(STDOUT_FILENO); // close(1);
-                            if (dup(fd) == -1) {
-                                perror("dup");
-                                exit(1);
-                            }
-                            close(fd);
-                        }
-                        */
-
-                        // 2. Child process: execute the command:
+                        // Child process: execute the command:
                         int fd[2];
                         if (pipe(fd) == -1) {
                             perror("pipe");
@@ -319,7 +309,7 @@ int main(int argc, char* argv[]) {
                             waitpid(pid_1, &status, 0);
                             waitpid(pid_2, &status, 0);
                         }
-                    } else if (command_counter == 3) {
+                    } else if (command_counter == 9) {
                         // ------------------ 3 commands -----------------------------------------------------------
                         //printf("NOUP, 3 commands not supported yet\n");
 
@@ -414,7 +404,7 @@ int main(int argc, char* argv[]) {
                                 waitpid(pid_3, &status, 0);
                             }
                         }
-                    } else if (command_counter > 3) {
+                    } else if (command_counter > 2) {
                         /*
                         pid_t a = fork();
                         if (a==0) {
