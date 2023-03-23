@@ -24,33 +24,11 @@ Test12: 3 commands + error redirection ->  OK
 Test13: N commands -> Test command:  test11
  OK
 Test14: Calculator 1 ->  OK
-Test15: Calculator 2 -> Files calc2.res and salida_msh differ
- Error
- === test === 
-mycalc 3 add -8
-mycalc 5 add 13
-env | grep Acc > var
- === Output ./msh  === 
-MSH>>[OK] 3 + -8 = -5; Acc -5
-MSH>>[OK] 5 + 13 = 18; Acc 13
-MSH>> === Expected Output  === 
-MSH>>[OK] 3 + -8 = -5; Acc -5
-MSH>>[OK] 5 + 13 = 18; Acc 13
-MSH>>MSH>> <------------------ Me sobra uno de los dos MSH>> ------------------>
+Test15: Calculator 2 ->  OK
 Test16: Calculator 3 ->  OK
 Test17: Calculator 4 ->  OK
-Test18: Calculator 5 ->  Error
- === test === 
-mycalc 10 mod 7
- === Output ./msh  === 
- === Expected Output  === 
-[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>
-Test19: Calculator 6 ->  Error
- === test === 
-mycalc mycalc 8 mas
- === Output ./msh  === 
- === Expected Output  === 
-[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>
+Test18: Calculator 5 ->  OK
+Test19: Calculator 6 ->  OK
 Test20: Calculator $Acc ->  Error
  === test === 
 Use of environment variable
@@ -67,4 +45,4 @@ HH:MM:SS Format
 Test22: Background -> Test command:  test21
  OK
 Summary of tests: -> 
-grade: 8.09
+grade: 9.52

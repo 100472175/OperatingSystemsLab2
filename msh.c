@@ -152,7 +152,7 @@ int main(int argc, char* argv[]) {
                     unsigned long long hours = mytime / 3600000;
                     unsigned long long minutes = (mytime % 3600000) / 60000;
                     unsigned long long seconds = ((mytime % 3600000) % 60000) / 1000;
-                    printf("mytime: %02llu:%02llu:%02llu\n", hours, minutes, seconds);
+                    printf("%02llu:%02llu:%02llu\n", hours, minutes, seconds);
                     //printf("mytime: %lu\n", mytime);
 
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
@@ -165,7 +165,7 @@ int main(int argc, char* argv[]) {
                     // Command execution
                     if ((argvv[0][1] == NULL) || (argvv[0][2] == NULL) || (argvv[0][3] == NULL) ||
                         (argvv[0][4] != NULL)) {
-                        printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                        fprintf(stderr, "[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                     } else {
                         // 1. Get the first number
                         long first_number = atol(argvv[0][1]);
@@ -196,7 +196,7 @@ int main(int argc, char* argv[]) {
                             fprintf(stderr, "[OK] %li / %li = %li; Remainder %d\n", first_number, second_number, result,
                                    (int) first_number % (int) second_number);
                         } else {
-                            fprintf(stderr, "[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
+                            printf("[ERROR] The structure of the command is mycalc <operand_1> <add/mul/div> <operand_2>\n");
                         }
                         /*
                         // Return the STDOUT to the original
