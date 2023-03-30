@@ -103,6 +103,7 @@ int main(int argc, char* argv[]) {
 
     char ***argvv = NULL;
     int num_commands;
+    setenv("Acc", "0", 0);
 
 
     while (1) {
@@ -152,7 +153,9 @@ int main(int argc, char* argv[]) {
                     unsigned long long hours = mytime / 3600000;
                     unsigned long long minutes = (mytime % 3600000) / 60000;
                     unsigned long long seconds = ((mytime % 3600000) % 60000) / 1000;
-                    printf("%02llu:%02llu:%02llu\n", hours, minutes, seconds);
+                    fprintf(stderr,"%02llu:%02llu:%02llu\n", hours, minutes, seconds);
+
+                    //printf("%02llu:%02llu:%02llu\n", hours, minutes, seconds);
                     //printf("mytime: %lu\n", mytime);
 
                 } else if (strcmp(argvv[0][0], "mycalc") == 0) {
@@ -178,16 +181,18 @@ int main(int argc, char* argv[]) {
                         if (strcmp(operator_str, "add") == 0) {
                             long result = first_number + second_number;
                             Acc_local = getenv("Acc");
+                            /*
                             if (Acc_local == NULL) {
                                 Acc += result;
                                 fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc);
                             } else {
+                             */
                                 Acc_local_int = atoi(Acc_local);
                                 Acc_local_int += result;
                                 sprintf(Acc_local, "%li", Acc_local_int);
                                 setenv("Acc", Acc_local, 1);
                                 fprintf(stderr, "[OK] %li + %li = %li; Acc %li\n", first_number, second_number, result, Acc_local_int);
-                            }
+                            //}
                         } else if (strcmp(operator_str, "mul") == 0) { // Multiplication
                             long result = first_number * second_number;
                             fprintf(stderr, "[OK] %li * %li = %li\n", first_number, second_number, result);

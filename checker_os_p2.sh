@@ -419,7 +419,8 @@ echo "env | grep Acc > var"           >>calc2
 echo "MSH>>[OK] 3 + -8 = -5; Acc -5"  >>calc2.res
 #echo "MSH>> mycalc 5 add 13"         >>calc2.res
 echo "MSH>>[OK] 5 + 13 = 18; Acc 13"  >>calc2.res
-echo "MSH>>MSH>>"                     >>calc2.res
+#echo "MSH>>MSH>>"                     >>calc2.res
+echo "MSH>>"                          >>calc2.res
 
 echo "mycalc 3 mul 8"                >calc3
 #echo "MSH>> mycalc 10 mod 7"        > calc3.res

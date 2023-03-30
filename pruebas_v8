@@ -1,0 +1,37 @@
+[H[2J[3J*** TESTING THE MINISHELL 
+Archive:  os_p2_100472175_100472157_100460314.zip
+  inflating: msh.c                   
+  inflating: authors.txt             
+File : os_p2_100472175_100472157_100460314.zip
+Compiling
+OK
+Test1: 1 command -> Test command:  test1
+ OK
+Test2: 1 command + input redirection -> Test command:  test2
+ OK
+Test3: 1 command + output redirection ->  OK
+Test4: 1 command + error redirection ->  OK
+Test5: 2 commands -> Test command:  test5
+ OK
+Test6: 2 commands + input redirection ->  OK
+Test7: 2 commands + output redirection ->  OK
+Test8: 2 commands + error redirection ->  OK
+Test9: 3 commands -> Test command:  test8
+ OK
+Test10: 3 commands + input redirection ->  OK
+Test11: 3 commands + output redirection ->  OK
+Test12: 3 commands + error redirection ->  OK
+Test13: N commands -> Test command:  test11
+ OK
+Test14: Calculator 1 ->  OK
+Test15: Calculator 2 ->  OK
+Test16: Calculator 3 ->  OK
+Test17: Calculator 4 ->  OK
+Test18: Calculator 5 ->  OK
+Test19: Calculator 6 ->  OK
+Test20: Calculator $Acc ->  OK
+Test21: time 1 ->  OK
+Test22: Background -> Test command:  test21
+ OK
+Summary of tests: -> 
+grade: 10.47
