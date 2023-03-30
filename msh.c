@@ -8,7 +8,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <wait.h>
+//#include <wait.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -219,7 +219,7 @@ int main(int argc, char* argv[]) {
                     }
 
                 } else { // Commands that need an execvp
-                    if (command_counter == 1) {
+                    if (command_counter == 9) {
                         // ------------------ 1 command -----------------------------------------------------------
 
                         // Child process: execute the command:
@@ -439,7 +439,7 @@ int main(int argc, char* argv[]) {
                             }
                         }
                     }
-                    else if (command_counter > 1) {
+                    else if (command_counter > 0) {
                         /*
                         pid_t a = fork();
                         if (a==0) {
@@ -459,6 +459,31 @@ int main(int argc, char* argv[]) {
                         }
                         pid_t pid[command_counter];
 
+                        // Redirection for all the input and output pipes
+                        if (filev[0][0] != '0') {
+                            fd_open = open(filev[0], O_RDONLY);
+                            if (fd_open == -1) {
+                                perror("open");
+                                exit(EXIT_FAILURE);
+                            }
+                            fd[0][0] = fd_open;
+                        } else {
+                            fd[0][0] = 0;
+                        }
+                        // If there is an output redirection
+                        if (strcmp(filev[1], "0") != 0) {
+                            fd_read = open(filev[1], O_WRONLY | O_CREAT | O_TRUNC, 0666);
+                            if (fd_read == -1) {
+                                perror("open");
+                                exit(EXIT_FAILURE);
+                            }
+                            if ((dupfd = dup(fd_read) == -1)) {
+                                perror("dup");
+                                exit(EXIT_FAILURE);
+                            }
+                            fd[command_counter-2][1] = fd_read;
+                        }
+                        // /////////////////////////
 
                         for (int i = 0; i < command_counter; i++) {
                             pid[i] = fork();
@@ -469,19 +494,15 @@ int main(int argc, char* argv[]) {
                             if (i == 0) {
                                 if (pid[i] == 0) {
                                     // First process, redirect input if aplicable
-                                    if (filev[0][0] != '0') {
-                                        fd_open = open(filev[0], O_RDONLY);
-                                        if (fd_open == -1) {
-                                            perror("open");
-                                            exit(EXIT_FAILURE);
-                                        }
-                                        close(STDIN_FILENO);
-                                        dup(fd_open);
-                                        close(fd_open);
-                                    }
+                                    close(STDIN_FILENO);
+                                    dup(fd[i][0]);
+                                    close(fd[i][0]);
+
                                     // First process, redirect output
+                                    if (command_counter == 1) {
                                     close(STDOUT_FILENO);
                                     dup(fd[i][1]);
+                                    }
                                     // First process error redirection if applicable
                                     if (strcmp(filev[2], "0") != 0) {
                                         fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666);
