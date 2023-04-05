@@ -494,11 +494,9 @@ int main(int argc, char* argv[]) {
                                             exit(EXIT_FAILURE);
                                         }
                                     }
-
                                     // Close
                                     close(fd[i][1]);
                                     close(fd[i][0]);
-
                                     // Execution
                                     //perror("Primera ejecución\n");
                                     getCompleteCommand(argvv, i);
@@ -545,11 +543,6 @@ int main(int argc, char* argv[]) {
                                             exit(EXIT_FAILURE);
                                         }
                                     }
-
-                                    // // Close
-                                    // close(fd[i-1][0]);
-                                    // //close(fd[i-1][1]);
-
                                     // Execution
                                     //perror("Última ejecución\n");
                                     getCompleteCommand(argvv, i);
@@ -562,6 +555,11 @@ int main(int argc, char* argv[]) {
                                         for (int j = 0; j < command_counter; j++) {
                                             wait(NULL);
                                             waitpid(pid[j], &status, 0);
+                                        }
+                                    } else {
+                                        // Send a signal to kill al processes to make sure there are no zombie processes
+                                        for (int j = 0; j < command_counter; j++) {
+                                            kill(pid[j], SIGINT);
                                         }
                                     }
                                 }
