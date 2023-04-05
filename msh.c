@@ -272,8 +272,12 @@ int main(int argc, char* argv[]) {
 
                         } else if (pid > 0) {
                             // 3. Parent process: wait for the child to finish:
-                            if (in_background == 0)
+                            if (in_background == 0) {
                                 waitpid(pid, &status, 0);
+                            } else {
+                                printf("[%d]\n", pid);
+                                //perror("waitpid");
+                            }
                         }
                     }
                     if (command_counter == 9) {
@@ -557,10 +561,19 @@ int main(int argc, char* argv[]) {
                                             waitpid(pid[j], &status, 0);
                                         }
                                     } else {
-                                        // Send a signal to kill al processes to make sure there are no zombie processes
-                                        for (int j = 0; j < command_counter; j++) {
-                                            kill(pid[j], SIGINT);
+                                        // Other option: use WNOHANG
+                                        for (int k = 0; k < command_counter; k++) {
+                                            pid_t result = waitpid(pid[k], &status, WNOHANG);
+                                            if (result != 0) {
+                                                kill(pid[k], SIGTERM);
+
+                                            }
                                         }
+                                        printf("[%d]\n", pid[command_counter-1]);
+                                        // Send a signal to kill al processes to make sure there are no zombie processes
+                                        /*for (int j = 0; j < command_counter; j++) {
+                                            kill(pid[j], SIGINT);
+                                        }*/
                                     }
                                 }
                             } else {
