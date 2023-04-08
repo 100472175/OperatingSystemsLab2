@@ -254,6 +254,7 @@ int main(int argc, char* argv[]) {
                                 }
                                 close(fd_read);
                             }
+                            // Maybe this is useless, as we are doing it above, the first lines.
                             // If there is an error redirection
                             if (strcmp(filev[2], "0") != 0) {
                                 fd_read = open(filev[2], O_WRONLY | O_CREAT, 0666); // No truncation as we want to append the errors
@@ -562,12 +563,17 @@ int main(int argc, char* argv[]) {
                                         }
                                     } else {
                                         // Other option: use WNOHANG
+                                        // For when it is in background
                                         for (int k = 0; k < command_counter; k++) {
+                                            while (pid_t result = waitpid(pid[k], &status, WNOHANG) == 0) {uwait(1)}
+                                            kill(pid[k], SIGTERM);
+                                            /*
                                             pid_t result = waitpid(pid[k], &status, WNOHANG);
                                             if (result != 0) {
                                                 kill(pid[k], SIGTERM);
 
                                             }
+                                            */
                                         }
                                         printf("[%d]\n", pid[command_counter-1]);
                                         // Send a signal to kill al processes to make sure there are no zombie processes
