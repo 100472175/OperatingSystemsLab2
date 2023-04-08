@@ -558,7 +558,7 @@ int main(int argc, char* argv[]) {
                                     if (!in_background) {
                                         for (int j = 0; j < command_counter; j++) {
                                             wait(NULL);
-                                            waitpid(pid[j], &status, 0);
+                                            //waitpid(pid[j], &status, 0);
                                         }
                                     } else {
                                         // Other option: use WNOHANG
