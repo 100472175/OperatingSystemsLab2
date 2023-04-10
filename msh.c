@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     int dupfd;
     char output_string[1000];
     long int Acc = 0;
-    char *Acc_local;
+    char *Acc_local[25];
     long int Acc_local_int = 0;
     /**** Do not delete this code.****/
     int end = 0;
