@@ -77,7 +77,7 @@ int main(int argc, char* argv[]) {
     int dupfd;
     char output_string[1000];
     long int Acc = 0;
-    char *Acc_local[25];
+    char Acc_local[25];
     long int Acc_local_int = 0;
     /**** Do not delete this code.****/
     int end = 0;
@@ -180,7 +180,7 @@ int main(int argc, char* argv[]) {
                         strcpy(operator_str, argvv[0][2]);
                         if (strcmp(operator_str, "add") == 0) {
                             long result = first_number + second_number;
-                            Acc_local = getenv("Acc");
+                            strcpy(Acc_local, getenv("Acc"));
                             /*
                             if (Acc_local == NULL) {
                                 Acc += result;
@@ -565,7 +565,8 @@ int main(int argc, char* argv[]) {
                                         // Other option: use WNOHANG
                                         // For when it is in background
                                         for (int k = 0; k < command_counter; k++) {
-                                            while (pid_t result = waitpid(pid[k], &status, WNOHANG) == 0) {uwait(1)}
+					    pid_t result;
+                                            while (result = waitpid(pid[k], &status, WNOHANG) == 0) {usleep(1);}
                                             kill(pid[k], SIGTERM);
                                             /*
                                             pid_t result = waitpid(pid[k], &status, WNOHANG);
